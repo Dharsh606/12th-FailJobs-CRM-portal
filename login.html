@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12th FailJobs CRM - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="login-page">
+    <!-- Floating Particles -->
+    <div class="floating-particles"></div>
+    
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card glassmorphism">
+            <div class="login-header">
+                <div class="logo">
+                    <img src="assets/logo.png" alt="12th FailJobs Logo">
+                    <h1>12th FailJobs</h1>
+                </div>
+                <h2>CRM Portal</h2>
+                <p>Manage your workforce efficiently</p>
+            </div>
+
+            <form class="login-form" id="loginForm">
+                <div class="form-group glassmorphism">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <input type="email" id="email" name="email" placeholder="admin@12thfailjobs.com" required>
+                </div>
+
+                <div class="form-group glassmorphism">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="form-group glassmorphism">
+                    <label for="role">
+                        <i class="fas fa-user-tag"></i>
+                        Login As
+                    </label>
+                    <select id="role" name="role" required>
+                        <option value="">Select Role</option>
+                        <option value="admin">Admin</option>
+                        <option value="recruiter">Recruiter</option>
+                    </select>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="remember">
+                        <span class="checkmark"></span>
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-btn glassmorphism">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
+                <p>Contact: contact@12th-failjobs.com</p>
+                <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                    <i class="fas fa-external-link-alt"></i> Official Website
+                </a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

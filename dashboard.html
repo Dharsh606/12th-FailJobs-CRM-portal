@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12th FailJobs CRM - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="crm-page">
+    <!-- Floating Particles -->
+    <div class="floating-particles"></div>
+    
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <!-- Collapsible Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="assets/logo.png" alt="12th FailJobs Logo">
+                <h1>12th FailJobs</h1>
+            </div>
+            <p>CRM Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active">
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="workers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Workers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="recruiters.html">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Recruiters</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="jobs.html">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Jobs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="requests.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Requests</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="analytics.html">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="logout">
+                    <a href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header glassmorphism">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar glassmorphism">
+                    <input type="text" placeholder="Search workers, jobs...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="notifications">
+                    <button class="notification-btn" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <div class="notification-dropdown glassmorphism" id="notificationDropdown">
+                        <div class="notification-item">
+                            <i class="fas fa-user-plus"></i>
+                            <div>
+                                <p>New worker registered</p>
+                                <small>2 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <i class="fas fa-briefcase"></i>
+                            <div>
+                                <p>New job request</p>
+                                <small>5 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <p>Job completed</p>
+                                <small>1 hour ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile glassmorphism">
+                    <img src="https://picsum.photos/seed/admin/40/40.jpg" alt="Admin">
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="dashboard-content">
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card glassmorphism">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>248</h3>
+                        <p>Total Workers</p>
+                        <span class="stat-change positive">+12% this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glassmorphism">
+                    <div class="stat-icon green">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>186</h3>
+                        <p>Active Workers</p>
+                        <span class="stat-change positive">+8% this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glassmorphism">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>142</h3>
+                        <p>Jobs Posted</p>
+                        <span class="stat-change positive">+15% this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glassmorphism">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>98</h3>
+                        <p>Jobs Completed</p>
+                        <span class="stat-change positive">+22% this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glassmorphism">
+                    <div class="stat-icon red">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>44</h3>
+                        <p>Pending Requests</p>
+                        <span class="stat-change negative">+5% this month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-card glassmorphism">
+                    <h3>Worker Registrations</h3>
+                    <canvas id="workerChart"></canvas>
+                </div>
+
+                <div class="chart-card glassmorphism">
+                    <h3>Jobs Completed This Week</h3>
+                    <canvas id="jobChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-section">
+                <div class="activity-card glassmorphism">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon worker">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p>New worker <strong>Raj Kumar</strong> registered as Carpenter</p>
+                                <small>2 minutes ago</small>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon job">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p>Job <strong>Home Renovation</strong> assigned to <strong>Amit Singh</strong></p>
+                                <small>15 minutes ago</small>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon completed">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p>Job <strong>Electrical Work</strong> marked as completed</p>
+                                <small>1 hour ago</small>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon request">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p>New job request from <strong>Suresh Kumar</strong></p>
+                                <small>2 hours ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="dashboard-footer glassmorphism">
+            <div class="footer-content">
+                <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
+                <p>Contact: contact@12th-failjobs.com</p>
+                <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                    <i class="fas fa-external-link-alt"></i> Official Website
+                </a></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

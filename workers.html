@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12th FailJobs CRM - Workers</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="crm-page">
+    <!-- Floating Particles -->
+    <div class="floating-particles"></div>
+    
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <!-- Collapsible Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="assets/logo.png" alt="12th FailJobs Logo">
+                <h1>12th FailJobs</h1>
+            </div>
+            <p>CRM Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="workers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Workers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="recruiters.html">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Recruiters</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="jobs.html">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Jobs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="requests.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Requests</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="analytics.html">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="logout">
+                    <a href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header glassmorphism">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Workers</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar glassmorphism">
+                    <input type="text" placeholder="Search workers...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="notifications">
+                    <button class="notification-btn" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <div class="notification-dropdown glassmorphism" id="notificationDropdown">
+                        <div class="notification-item">
+                            <i class="fas fa-user-plus"></i>
+                            <div>
+                                <p>New worker registered</p>
+                                <small>2 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <i class="fas fa-briefcase"></i>
+                            <div>
+                                <p>New job request</p>
+                                <small>5 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <p>Job completed</p>
+                                <small>1 hour ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile glassmorphism">
+                    <img src="https://picsum.photos/seed/admin/40/40.jpg" alt="Admin">
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Workers Content -->
+        <main class="workers-content">
+            <div class="content-header glassmorphism">
+                <h1>Workers Management</h1>
+                <div class="actions">
+                    <div class="search-bar glassmorphism">
+                        <input type="text" id="workerSearch" placeholder="Search workers..." onkeyup="filterWorkers(this.value)">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <select class="filter-select glassmorphism" id="categoryFilter" onchange="filterWorkersByCategory()">
+                        <option value="">All Categories</option>
+                        <option value="Carpenter">Carpenter</option>
+                        <option value="Electrician">Electrician</option>
+                        <option value="Plumber">Plumber</option>
+                        <option value="Painter">Painter</option>
+                        <option value="Mechanic">Mechanic</option>
+                    </select>
+                    <select class="filter-select glassmorphism" id="statusFilter" onchange="filterWorkersByStatus()">
+                        <option value="">All Status</option>
+                        <option value="available">Available</option>
+                        <option value="busy">Busy</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                    <button class="btn btn-primary glassmorphism" onclick="openAddWorkerModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Worker
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Workers Grid -->
+            <div class="workers-grid" id="workersGrid">
+                <div class="worker-card glassmorphism">
+                    <div class="worker-header">
+                        <div class="worker-avatar">RK</div>
+                        <div class="worker-info">
+                            <h4>Raj Kumar</h4>
+                            <p>Carpenter</p>
+                        </div>
+                    </div>
+                    <div class="worker-details">
+                        <div class="worker-detail">
+                            <i class="fas fa-phone"></i>
+                            <span>+91 9876543210</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Mumbai, Maharashtra</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>5 years experience</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-star"></i>
+                            <span>Rating: 4.5/5</span>
+                        </div>
+                    </div>
+                    <div class="worker-status">
+                        <span class="status-badge available">Available</span>
+                        <div class="worker-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="editWorker('1')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteWorker('1')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="worker-card glassmorphism">
+                    <div class="worker-header">
+                        <div class="worker-avatar">AS</div>
+                        <div class="worker-info">
+                            <h4>Amit Singh</h4>
+                            <p>Electrician</p>
+                        </div>
+                    </div>
+                    <div class="worker-details">
+                        <div class="worker-detail">
+                            <i class="fas fa-phone"></i>
+                            <span>+91 8765432109</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Delhi, NCR</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>3 years experience</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-star"></i>
+                            <span>Rating: 4.8/5</span>
+                        </div>
+                    </div>
+                    <div class="worker-status">
+                        <span class="status-badge busy">Busy</span>
+                        <div class="worker-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="editWorker('2')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteWorker('2')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="worker-card glassmorphism">
+                    <div class="worker-header">
+                        <div class="worker-avatar">SP</div>
+                        <div class="worker-info">
+                            <h4>Suresh Patil</h4>
+                            <p>Plumber</p>
+                        </div>
+                    </div>
+                    <div class="worker-details">
+                        <div class="worker-detail">
+                            <i class="fas fa-phone"></i>
+                            <span>+91 7654321098</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Pune, Maharashtra</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>7 years experience</span>
+                        </div>
+                        <div class="worker-detail">
+                            <i class="fas fa-star"></i>
+                            <span>Rating: 4.2/5</span>
+                        </div>
+                    </div>
+                    <div class="worker-status">
+                        <span class="status-badge available">Available</span>
+                        <div class="worker-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="editWorker('3')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteWorker('3')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Worker Modal -->
+    <div class="modal" id="workerModal">
+        <div class="modal-content glassmorphism">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Worker</h3>
+                <button class="close-btn" onclick="closeWorkerModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="worker-form" id="workerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="workerName">Full Name *</label>
+                        <input type="text" id="workerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="workerPhone">Phone Number *</label>
+                        <input type="tel" id="workerPhone" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="workerCategory">Job Category *</label>
+                        <select id="workerCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="carpenter">Carpenter</option>
+                            <option value="mason">Mason</option>
+                            <option value="painter">Painter</option>
+                            <option value="electrician">Electrician</option>
+                            <option value="plumber">Plumber</option>
+                            <option value="driver">Driver</option>
+                            <option value="cleaner">House Cleaner</option>
+                            <option value="helper">Construction Helper</option>
+                            <option value="security">Security Guard</option>
+                            <option value="delivery">Delivery Worker</option>
+                            <option value="farm">Farm Worker</option>
+                            <option value="welder">Welder</option>
+                            <option value="mechanic">Mechanic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workerLocation">Location *</label>
+                        <select id="workerLocation" required>
+                            <option value="">Select Location</option>
+                            <option value="delhi">Delhi</option>
+                            <option value="mumbai">Mumbai</option>
+                            <option value="bangalore">Bangalore</option>
+                            <option value="chennai">Chennai</option>
+                            <option value="kolkata">Kolkata</option>
+                            <option value="hyderabad">Hyderabad</option>
+                            <option value="pune">Pune</option>
+                            <option value="jaipur">Jaipur</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="workerExperience">Experience (Years) *</label>
+                        <input type="number" id="workerExperience" min="0" max="50" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="workerAvailability">Availability Status *</label>
+                        <select id="workerAvailability" required>
+                            <option value="available">Available</option>
+                            <option value="busy">Busy</option>
+                            <option value="offline">Offline</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="workerRating">Rating (1-5)</label>
+                        <select id="workerRating">
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="1">1 - Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workerEmail">Email (Optional)</label>
+                        <input type="email" id="workerEmail">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeWorkerModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Worker
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="crm-footer">
+        <div class="footer-content">
+            <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: contact@12th-failjobs.com</p>
+            <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                <i class="fas fa-external-link-alt"></i> Official Website
+            </a></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

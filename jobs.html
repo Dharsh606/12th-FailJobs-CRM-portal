@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12th FailJobs CRM - Jobs</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="crm-page">
+    <!-- Floating Particles -->
+    <div class="floating-particles"></div>
+    
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <!-- Collapsible Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="assets/logo.png" alt="12th FailJobs Logo">
+                <h1>12th FailJobs</h1>
+            </div>
+            <p>CRM Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="workers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Workers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="recruiters.html">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Recruiters</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="jobs.html">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Jobs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="requests.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Requests</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="analytics.html">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="logout">
+                    <a href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header glassmorphism">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Jobs Management</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar glassmorphism">
+                    <input type="text" id="jobSearch" placeholder="Search jobs by title, location, or worker...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="notifications">
+                    <button class="notification-btn" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <div class="notification-dropdown glassmorphism" id="notificationDropdown">
+                        <div class="notification-item">
+                            <i class="fas fa-user-plus"></i>
+                            <div>
+                                <p>New worker registered</p>
+                                <small>2 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <i class="fas fa-briefcase"></i>
+                            <div>
+                                <p>New job request</p>
+                                <small>5 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <p>Job completed</p>
+                                <small>1 hour ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile glassmorphism">
+                    <img src="https://picsum.photos/seed/admin/40/40.jpg" alt="Admin">
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Jobs Content -->
+        <main class="jobs-content">
+            <div class="content-header glassmorphism">
+                <h1>Jobs Management</h1>
+                <div class="actions">
+                    <div class="search-bar glassmorphism">
+                        <input type="text" id="jobSearch" placeholder="Search jobs..." onkeyup="filterJobs(this.value)">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <select class="filter-select glassmorphism" id="statusFilter" onchange="filterJobsByStatus()">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <select class="filter-select glassmorphism" id="categoryFilter" onchange="filterJobsByCategory()">
+                        <option value="">All Categories</option>
+                        <option value="Carpentry">Carpentry</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Painting">Painting</option>
+                    </select>
+                    <button class="btn btn-primary glassmorphism" onclick="openAddJobModal()">
+                        <i class="fas fa-plus"></i>
+                        Create Job
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Jobs Table -->
+            <div class="jobs-container glassmorphism">
+                <table class="jobs-table">
+                    <thead>
+                        <tr>
+                            <th>Job ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Location</th>
+                            <th>Worker</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#JOB001</td>
+                            <td>Home Renovation</td>
+                            <td>Carpentry</td>
+                            <td>Mumbai, Maharashtra</td>
+                            <td>Raj Kumar</td>
+                            <td><span class="job-status in-progress">In Progress</span></td>
+                            <td>₹5,000</td>
+                            <td>
+                                <button class="btn btn-sm btn-secondary" onclick="editJob('JOB001')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB001')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#JOB002</td>
+                            <td>Electrical Wiring</td>
+                            <td>Electrical</td>
+                            <td>Delhi, NCR</td>
+                            <td>Amit Singh</td>
+                            <td><span class="job-status completed">Completed</span></td>
+                            <td>₹3,500</td>
+                            <td>
+                                <button class="btn btn-sm btn-secondary" onclick="editJob('JOB002')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB002')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#JOB003</td>
+                            <td>Bathroom Plumbing</td>
+                            <td>Plumbing</td>
+                            <td>Pune, Maharashtra</td>
+                            <td>Suresh Patil</td>
+                            <td><span class="job-status pending">Pending</span></td>
+                            <td>₹2,800</td>
+                            <td>
+                                <button class="btn btn-sm btn-secondary" onclick="editJob('JOB003')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB003')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Pagination -->
+        <div class="pagination glassmorphism">
+            <button class="pagination-btn" onclick="previousPage()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="page-info">Page 1 of 5</span>
+            <button class="pagination-btn" onclick="nextPage()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Job Modal -->
+    <div class="modal" id="jobModal">
+        <div class="modal-content glassmorphism">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Job</h3>
+                <button class="close-btn" onclick="closeJobModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="job-form" id="jobForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title *</label>
+                        <input type="text" id="jobTitle" required placeholder="e.g., Home Renovation">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobType">Job Type *</label>
+                        <select id="jobType" required>
+                            <option value="">Select Type</option>
+                            <option value="carpentry">Carpentry</option>
+                            <option value="masonry">Masonry</option>
+                            <option value="painting">Painting</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="transportation">Transportation</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="construction">Construction</option>
+                            <option value="security">Security</option>
+                            <option value="delivery">Delivery</option>
+                            <option value="farming">Farming</option>
+                            <option value="welding">Welding</option>
+                            <option value="mechanical">Mechanical</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobLocation">Location *</label>
+                        <select id="jobLocation" required>
+                            <option value="">Select Location</option>
+                            <option value="delhi">Delhi</option>
+                            <option value="mumbai">Mumbai</option>
+                            <option value="bangalore">Bangalore</option>
+                            <option value="chennai">Chennai</option>
+                            <option value="kolkata">Kolkata</option>
+                            <option value="hyderabad">Hyderabad</option>
+                            <option value="pune">Pune</option>
+                            <option value="jaipur">Jaipur</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobWorker">Assign Worker</label>
+                        <select id="jobWorker">
+                            <option value="">Select Worker (Optional)</option>
+                            <!-- Workers will be dynamically populated -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobPayment">Payment Amount (₹) *</label>
+                        <input type="number" id="jobPayment" min="0" required placeholder="5000">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobStatus">Status *</label>
+                        <select id="jobStatus" required>
+                            <option value="pending">Pending</option>
+                            <option value="assigned">Assigned</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="jobDescription">Job Description</label>
+                    <textarea id="jobDescription" rows="4" placeholder="Provide detailed job requirements..."></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="jobClientInfo">Client Information</label>
+                    <input type="text" id="jobClientInfo" placeholder="Client name and contact details">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeJobModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Job
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="crm-footer">
+        <div class="footer-content">
+            <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: contact@12th-failjobs.com</p>
+            <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                <i class="fas fa-external-link-alt"></i> Official Website
+            </a></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
