@@ -3,88 +3,611 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12th FailJobs CRM - Login</title>
+    <title>12th FailJobs CRM - Professional Login</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.googleapis.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Enhanced Login Styles */
+        .login-page {
+            min-height: 100vh;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px;
+            gap: 60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-left {
+            flex: 1;
+            text-align: left;
+            color: #333;
+            max-width: 600px;
+        }
+
+        .login-left h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #004e92, #007bff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+        }
+
+        .login-left h2 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .login-left p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .login-features {
+            margin-top: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(10px);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 1.3rem;
+        }
+
+        .feature-text h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .feature-text p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .login-right {
+            flex: 0 0 500px;
+            position: relative;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .login-logo img {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            border-radius: 12px;
+        }
+
+        .login-logo h1 {
+            color: #004e92;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .login-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .login-form {
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+            color: #004e92;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #004e92;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 78, 146, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group select::placeholder {
+            color: #999;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #004e92;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #003366;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 78, 146, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn i {
+            margin-right: 10px;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .login-footer p {
+            color: #666;
+            font-size: 0.85rem;
+            margin: 5px 0;
+        }
+
+        .login-footer a {
+            color: #004e92;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 600px;
+                gap: 40px;
+            }
+
+            .login-left {
+                text-align: center;
+                max-width: 100%;
+            }
+
+            .login-left h1 {
+                font-size: 2.8rem;
+            }
+
+            .login-right {
+                flex: 1;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-page {
+                padding: 20px;
+            }
+
+            .login-container {
+                padding: 20px;
+            }
+
+            .login-card {
+                padding: 30px 25px;
+            }
+
+            .login-left h1 {
+                font-size: 2.2rem;
+            }
+
+            .login-left h2 {
+                font-size: 1.4rem;
+            }
+
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 25px 20px;
+            }
+
+            .login-logo img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .login-logo h1 {
+                font-size: 1.6rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+
+            .login-btn {
+                padding: 15px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Hide default floating elements for cleaner look */
+        .floating-particles,
+        .animated-background {
+            display: none;
+        }
+    </style>
 </head>
 <body class="login-page">
-    <!-- Floating Particles -->
-    <div class="floating-particles"></div>
-    
-    <div class="animated-background">
-        <div class="floating-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-            <div class="shape shape-4"></div>
-        </div>
-    </div>
-
     <div class="login-container">
-        <div class="login-card glassmorphism">
-            <div class="login-header">
-                <div class="logo">
-                    <img src="assets/logo.png" alt="12th FailJobs Logo">
-                    <h1>12th FailJobs</h1>
+        <!-- Left Side - Features and Info -->
+        <div class="login-left">
+            <h1>Welcome Back</h1>
+            <h2>12th FailJobs CRM Portal</h2>
+            <p>Streamline your workforce management with our comprehensive CRM solution. Track workers, manage jobs, and optimize your recruitment process.</p>
+            
+            <div class="login-features">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Worker Management</h4>
+                        <p>Manage and track your entire workforce efficiently</p>
+                    </div>
                 </div>
-                <h2>CRM Portal</h2>
-                <p>Manage your workforce efficiently</p>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Job Tracking</h4>
+                        <p>Monitor job progress and assignments in real-time</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Analytics Dashboard</h4>
+                        <p>Get insights into your business performance</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Secure Platform</h4>
+                        <p>Enterprise-grade security for your data</p>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <form class="login-form" id="loginForm">
-                <div class="form-group glassmorphism">
-                    <label for="email">
-                        <i class="fas fa-envelope"></i>
-                        Email Address
-                    </label>
-                    <input type="email" id="email" name="email" placeholder="admin@12thfailjobs.com" required>
+        <!-- Right Side - Login Form -->
+        <div class="login-right">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-logo">
+                        <img src="assets/logo.png" alt="12th FailJobs Logo">
+                        <h1>12th FailJobs</h1>
+                    </div>
+                    <h2>Sign In</h2>
+                    <p>Access your dashboard</p>
                 </div>
 
-                <div class="form-group glassmorphism">
-                    <label for="password">
-                        <i class="fas fa-lock"></i>
-                        Password
-                    </label>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="email" name="email" placeholder="admin@12thfailjobs.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Password
+                        </label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">
+                            <i class="fas fa-user-tag"></i>
+                            Login As
+                        </label>
+                        <select id="role" name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="admin">Administrator</option>
+                            <option value="recruiter">Recruiter</option>
+                            <option value="manager">Manager</option>
+                            <option value="supervisor">Supervisor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="remember">
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+                    <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
+                    <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                        <i class="fas fa-external-link-alt"></i> Official Website
+                    </a></p>
                 </div>
-
-                <div class="form-group glassmorphism">
-                    <label for="role">
-                        <i class="fas fa-user-tag"></i>
-                        Login As
-                    </label>
-                    <select id="role" name="role" required>
-                        <option value="">Select Role</option>
-                        <option value="admin">Admin</option>
-                        <option value="recruiter">Recruiter</option>
-                    </select>
-                </div>
-
-                <div class="form-options">
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="remember">
-                        <span class="checkmark"></span>
-                        Remember me
-                    </label>
-                    <a href="#" class="forgot-password">Forgot password?</a>
-                </div>
-
-                <button type="submit" class="login-btn glassmorphism">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Sign In
-                </button>
-            </form>
-
-            <div class="login-footer">
-                <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
-                <p>Contact: contact@12th-failjobs.com</p>
-                <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
-                    <i class="fas fa-external-link-alt"></i> Official Website
-                </a></p>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script src="sidebar-toggle.js"></script>
+    <script>
+        // Enhanced login functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const role = document.getElementById('role').value;
+                const remember = document.getElementById('remember').checked;
+                
+                // Basic validation
+                if (!email || !password || !role) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert('Please enter a valid email address');
+                    return;
+                }
+                
+                // Password validation
+                if (password.length < 6) {
+                    alert('Password must be at least 6 characters long');
+                    return;
+                }
+                
+                // Simulate login process
+                console.log('Login attempt:', { email, role, remember });
+                
+                // Show loading state
+                const submitBtn = loginForm.querySelector('.login-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                submitBtn.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Redirect based on role
+                    if (role === 'admin') {
+                        window.location.href = 'dashboard.html';
+                    } else if (role === 'recruiter') {
+                        window.location.href = 'recruiter-dashboard.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 2000);
+            });
+
+            // Add input animations
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            // Forgot password handler
+            document.querySelector('.forgot-password').addEventListener('click', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                if (email) {
+                    alert(`Password reset link has been sent to: ${email}`);
+                } else {
+                    alert('Please enter your email address first');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

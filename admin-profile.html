@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - 12th FailJobs CRM</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Enhanced Profile Styles */
+        .profile-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            position: relative;
+        }
+
+        .avatar-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #004e92;
+            box-shadow: 0 8px 25px rgba(0, 78, 146, 0.2);
+        }
+
+        .avatar-upload {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 35px;
+            height: 35px;
+            background: #004e92;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid white;
+        }
+
+        .avatar-upload:hover {
+            background: #003366;
+            transform: scale(1.1);
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .profile-info h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        .profile-info p {
+            font-size: 1.1rem;
+            color: #666;
+            margin: 0 0 5px 0;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: rgba(0, 78, 146, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 78, 146, 0.1);
+        }
+
+        .stat-item h4 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #004e92;
+            margin: 0 0 5px 0;
+        }
+
+        .stat-item p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .profile-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 78, 146, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header i {
+            color: #004e92;
+            font-size: 1.2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #004e92;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .info-value {
+            color: #666;
+            font-size: 1rem;
+            text-align: right;
+        }
+
+        .activity-timeline {
+            display: grid;
+            gap: 20px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 4px solid #004e92;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 20px;
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .activity-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .settings-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .setting-item:hover {
+            background: #e9ecef;
+        }
+
+        .setting-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #004e92;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            left: 33px;
+        }
+
+        @media (max-width: 1200px) {
+            .profile-content {
+                padding: 20px;
+            }
+
+            .profile-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-content {
+                padding: 15px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+
+            .profile-section {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .activity-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .activity-icon {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-content {
+                padding: 10px;
+            }
+
+            .profile-header {
+                padding: 20px;
+            }
+
+            .avatar-img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-info h1 {
+                font-size: 1.8rem;
+            }
+
+            .profile-section {
+                padding: 15px;
+            }
+
+            .stat-item {
+                padding: 10px 15px;
+            }
+
+            .stat-item h4 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="crm-page">
+    <!-- Floating Particles -->
+    <div class="floating-particles"></div>
+    
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <!-- Collapsible Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="assets/logo.png" alt="12th FailJobs Logo">
+                <h1>12th FailJobs</h1>
+            </div>
+            <p>CRM Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="workers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Workers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="recruiters.html">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Recruiters</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="jobs.html">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Jobs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="requests.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Requests</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="analytics.html">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="admin-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li class="logout">
+                    <a href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header glassmorphism">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>My Profile</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar glassmorphism">
+                    <input type="text" placeholder="Search profile..." onkeyup="searchProfile(this.value)">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary glassmorphism" onclick="exportProfile()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <button class="btn btn-primary glassmorphism" onclick="saveProfile()">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Profile Content -->
+        <main class="profile-content">
+            <!-- Profile Header -->
+            <div class="profile-header glassmorphism">
+                <div class="profile-avatar">
+                    <img src="https://picsum.photos/seed/admin/120/120.jpg" alt="Profile" class="avatar-img">
+                    <div class="avatar-upload" onclick="uploadAvatar()">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h1>John Anderson</h1>
+                    <p>System Administrator</p>
+                    <p>john.anderson@12th-failjobs.com</p>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <h4>2.5</h4>
+                            <p>Years</p>
+                        </div>
+                        <div class="stat-item">
+                            <h4>1,248</h4>
+                            <p>Workers</p>
+                        </div>
+                        <div class="stat-item">
+                            <h4>456</h4>
+                            <p>Jobs</p>
+                        </div>
+                        <div class="stat-item">
+                            <h4>98%</h4>
+                            <p>Success</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Sections -->
+            <div class="profile-sections">
+                <!-- Personal Information -->
+                <div class="profile-section glassmorphism">
+                    <div class="section-header">
+                        <h3><i class="fas fa-user"></i> Personal Information</h3>
+                        <button class="btn btn-sm btn-outline" onclick="editSection('personal')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Full Name</span>
+                            <span class="info-value">John Anderson</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">john.anderson@12th-failjobs.com</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value">+91 98765 43210</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Date of Birth</span>
+                            <span class="info-value">March 15, 1990</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Address</span>
+                            <span class="info-value">123 Main Street, Delhi, India</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Emergency Contact</span>
+                            <span class="info-value">+91 87654 32109</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Information -->
+                <div class="profile-section glassmorphism">
+                    <div class="section-header">
+                        <h3><i class="fas fa-briefcase"></i> Professional Information</h3>
+                        <button class="btn btn-sm btn-outline" onclick="editSection('professional')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Department</span>
+                            <span class="info-value">IT Administration</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Role</span>
+                            <span class="info-value">System Administrator</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Employee ID</span>
+                            <span class="info-value">EMP001</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Join Date</span>
+                            <span class="info-value">January 15, 2022</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Reporting Manager</span>
+                            <span class="info-value">Sarah Johnson</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Work Location</span>
+                            <span class="info-value">Delhi Office</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="profile-section glassmorphism">
+                    <div class="section-header">
+                        <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+                        <button class="btn btn-sm btn-outline" onclick="editSection('security')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <span class="setting-label">Two-Factor Authentication</span>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, '2fa')"></div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Email Notifications</span>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'email')"></div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">SMS Alerts</span>
+                            <div class="toggle-switch" onclick="toggleSetting(this, 'sms')"></div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Login Alerts</span>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'login')"></div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Password Expiry</span>
+                            <span class="info-value">90 days</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Last Password Change</span>
+                            <span class="info-value">30 days ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="profile-section glassmorphism">
+                    <div class="section-header">
+                        <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        <button class="btn btn-sm btn-outline" onclick="viewAllActivity()">
+                            View All
+                        </button>
+                    </div>
+                    <div class="activity-timeline">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>New Worker Added</h4>
+                                <p>Added Raj Kumar (Carpenter) to the system</p>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>Job Created</h4>
+                                <p>Created new job: Home Renovation Project</p>
+                                <div class="activity-time">5 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>Report Generated</h4>
+                                <p>Generated monthly performance report</p>
+                                <div class="activity-time">1 day ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>System Update</h4>
+                                <p>Updated CRM system to version 2.4.1</p>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="profile-section glassmorphism">
+                    <div class="section-header">
+                        <h3><i class="fas fa-sliders-h"></i> Preferences</h3>
+                        <button class="btn btn-sm btn-outline" onclick="editSection('preferences')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <span class="setting-label">Language</span>
+                            <span class="info-value">English</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Timezone</span>
+                            <span class="info-value">IST (UTC+5:30)</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Date Format</span>
+                            <span class="info-value">DD/MM/YYYY</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Theme</span>
+                            <span class="info-value">Light</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Currency</span>
+                            <span class="info-value">INR (₹)</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Dashboard Layout</span>
+                            <span class="info-value">Grid View</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="crm-footer">
+        <div class="footer-content">
+            <p>&copy; Product of Yuga Yatra retail � 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
+            <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                <i class="fas fa-external-link-alt"></i> Official Website
+            </a></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+<script src="sidebar-toggle.js"></script>
+    <script>
+        // Simple navigation fix
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            // Add click event to each link
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Skip logout and empty links
+                    if (href === '#' || href.includes('logout')) {
+                        return;
+                    }
+                    
+                    // Navigate to the page
+                    window.location.href = href;
+                });
+            });
+            
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('a[href*="logout"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            });
+        });
+
+        // Profile functions
+        function searchProfile(searchTerm) {
+            console.log('Searching profile:', searchTerm);
+            // Implementation for profile search
+        }
+
+        function exportProfile() {
+            console.log('Exporting profile data');
+            // Implementation for profile export
+        }
+
+        function saveProfile() {
+            console.log('Saving profile changes');
+            // Implementation for saving profile
+            alert('Profile saved successfully!');
+        }
+
+        function uploadAvatar() {
+            console.log('Uploading avatar');
+            // Implementation for avatar upload
+        }
+
+        function editSection(section) {
+            console.log('Editing section:', section);
+            // Implementation for editing sections
+        }
+
+        function toggleSetting(element, setting) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            console.log(`Toggling ${setting}:`, isActive);
+            // Implementation for toggling settings
+        }
+
+        function viewAllActivity() {
+            console.log('Viewing all activity');
+            // Implementation for viewing all activity
+        }
+    </script>
+    <script>
+    // Enhanced sidebar toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Enhanced sidebar toggle loaded');
+        
+        const sidebar = document.getElementById('sidebar');
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        
+        // Initialize sidebar state
+        if (window.innerWidth > 768) {
+            if (sidebar) {
+                sidebar.classList.remove('collapsed');
+            }
+            if (dashboardContainer) {
+                dashboardContainer.classList.remove('expanded');
+            }
+        } else {
+            if (sidebar) {
+                sidebar.classList.add('collapsed');
+            }
+            if (dashboardContainer) {
+                dashboardContainer.classList.add('expanded');
+            }
+        }
+        
+        // Setup event listener for sidebar toggle button
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Toggle button clicked');
+                
+                if (sidebar) {
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    
+                    if (isCollapsed) {
+                        // Open sidebar
+                        sidebar.classList.remove('collapsed');
+                        if (dashboardContainer) {
+                            dashboardContainer.classList.remove('expanded');
+                        }
+                        const toggleIcon = sidebarToggle.querySelector('i');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-times');
+                            toggleIcon.classList.add('fa-bars');
+                        }
+                        console.log('Sidebar opened');
+                    } else {
+                        // Close sidebar
+                        sidebar.classList.add('collapsed');
+                        if (dashboardContainer) {
+                            dashboardContainer.classList.add('expanded');
+                        }
+                        const toggleIcon = sidebarToggle.querySelector('i');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-bars');
+                            toggleIcon.classList.add('fa-times');
+                        }
+                        console.log('Sidebar closed');
+                    }
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

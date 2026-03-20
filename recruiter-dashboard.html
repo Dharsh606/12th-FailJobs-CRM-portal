@@ -3,322 +3,856 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12th FailJobs CRM - Recruiter Dashboard</title>
+    <title>Recruiter Dashboard - 12th FailJobs CRM</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Recruiter Dashboard Styles */
+        .dashboard-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #ab47bc, #7e57c2);
+            color: white;
+        }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .stat-info p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .stat-change.negative {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .stat-change.neutral {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 78, 146, 0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .chart-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .actions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .actions-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 78, 146, 0.3);
+        }
+
+        .action-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .action-card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+
+        .action-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .recent-jobs {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .jobs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .jobs-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .jobs-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .job-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 4px solid #004e92;
+            transition: all 0.3s ease;
+        }
+
+        .job-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .job-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 20px;
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .job-details {
+            flex: 1;
+        }
+
+        .job-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .job-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .job-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .job-status.active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .job-status.pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .job-status.completed {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .top-workers {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .workers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .workers-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .workers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .worker-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid #004e92;
+            transition: all 0.3s ease;
+        }
+
+        .worker-card:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .worker-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .worker-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #004e92;
+        }
+
+        .worker-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .worker-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .worker-metrics {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #004e92;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-content {
+                padding: 20px;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .job-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .job-icon {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-content {
+                padding: 10px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .chart-card {
+                padding: 20px;
+            }
+
+            .quick-actions {
+                padding: 20px;
+            }
+
+            .recent-jobs {
+                padding: 20px;
+            }
+
+            .top-workers {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="crm-page">
     <!-- Floating Particles -->
     <div class="floating-particles"></div>
     
-    <div class="crm-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <img src="assets/logo.png" alt="12th FailJobs Logo">
-                    <h1>12th FailJobs</h1>
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <!-- Collapsible Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="assets/logo.png" alt="12th FailJobs Logo">
+                <h1>12th FailJobs</h1>
+            </div>
+            <p>CRM Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active">
+                    <a href="recruiter-dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="workers.html">
+                        <i class="fas fa-users"></i>
+                        <span>Workers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="jobs.html">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Jobs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="requests.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Requests</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="recruiters.html">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Recruiters</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li class="logout">
+                    <a href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header glassmorphism">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Recruiter Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar glassmorphism">
+                    <input type="text" placeholder="Search dashboard..." onkeyup="searchDashboard(this.value)">
+                    <i class="fas fa-search"></i>
                 </div>
-                <p>Recruiter Portal</p>
+                <div class="header-actions">
+                    <button class="btn btn-secondary glassmorphism" onclick="exportDashboard()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <button class="btn btn-primary glassmorphism" onclick="refreshDashboard()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="dashboard-content">
+            <!-- Statistics Cards -->
+            <div class="stats-grid glassmorphism">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>156</h3>
+                        <p>My Jobs</p>
+                        <span class="stat-change positive">+24 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>89</h3>
+                        <p>Workers Managed</p>
+                        <span class="stat-change positive">+18 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>₹3.2L</h3>
+                        <p>Total Revenue</p>
+                        <span class="stat-change positive">+₹0.8L this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>4.8</h3>
+                        <p>Avg Rating</p>
+                        <span class="stat-change positive">+0.2 this month</span>
+                    </div>
+                </div>
             </div>
 
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="active">
-                        <a href="/recruiter-dashboard">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/workers">
-                            <i class="fas fa-users"></i>
-                            <span>Workers</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/jobs">
-                            <i class="fas fa-briefcase"></i>
-                            <span>Jobs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/requests">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Requests</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/profile">
-                            <i class="fas fa-user"></i>
-                            <span>Profile</span>
-                        </a>
-                    </li>
-                    <li class="logout">
-                        <a href="#" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Header -->
-            <header class="header">
-                <div class="header-left">
-                    <button class="menu-toggle" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h1>Recruiter Dashboard</h1>
-                </div>
-                <div class="header-right">
-                    <div class="search-bar glassmorphism">
-                        <input type="text" placeholder="Search workers, jobs...">
-                        <i class="fas fa-search"></i>
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="chart-card glassmorphism">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Job Performance</h3>
                     </div>
-                    <div class="notifications">
-                        <button class="notification-btn" onclick="toggleNotifications()">
-                            <i class="fas fa-bell"></i>
-                            <span class="badge">5</span>
-                        </button>
-                    </div>
-                    <div class="user-profile glassmorphism">
-                        <img src="https://picsum.photos/seed/recruiter/40/40.jpg" alt="Recruiter">
-                        <span>John Recruiter</span>
+                    <div class="chart-container">
+                        <canvas id="jobPerformanceChart"></canvas>
                     </div>
                 </div>
-            </header>
 
-            <!-- Dashboard Content -->
-            <div class="dashboard-content">
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <button class="action-card glassmorphism" onclick="openPostJobModal()">
-                        <div class="action-icon">
-                            <i class="fas fa-plus-circle"></i>
-                        </div>
-                        <h3>Post New Job</h3>
-                        <p>Create a new job posting</p>
-                    </button>
+                <div class="chart-card glassmorphism">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-bar"></i> Category Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
 
-                    <button class="action-card glassmorphism" onclick="goToWorkers()">
-                        <div class="action-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>Find Workers</h3>
-                        <p>Browse available workers</p>
-                    </button>
-
-                    <button class="action-card glassmorphism" onclick="goToRequests()">
-                        <div class="action-icon">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
-                        <h3>View Requests</h3>
+            <!-- Quick Actions -->
+            <div class="quick-actions glassmorphism">
+                <div class="actions-header">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                </div>
+                <div class="actions-grid">
+                    <a href="jobs.html" class="action-card">
+                        <i class="fas fa-plus"></i>
+                        <h4>Create Job</h4>
+                        <p>Post new job opening</p>
+                    </a>
+                    <a href="workers.html" class="action-card">
+                        <i class="fas fa-user-plus"></i>
+                        <h4>Add Worker</h4>
+                        <p>Register new worker</p>
+                    </a>
+                    <a href="requests.html" class="action-card">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h4>View Requests</h4>
                         <p>Manage worker requests</p>
+                    </a>
+                    <a href="admin-profile.html" class="action-card">
+                        <i class="fas fa-user"></i>
+                        <h4>My Profile</h4>
+                        <p>Update profile info</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Jobs -->
+            <div class="recent-jobs glassmorphism">
+                <div class="jobs-header">
+                    <h3><i class="fas fa-briefcase"></i> Recent Jobs</h3>
+                    <button class="btn btn-sm btn-outline" onclick="viewAllJobs()">
+                        View All
                     </button>
-
-                    <button class="action-card glassmorphism" onclick="goToJobs()">
-                        <div class="action-icon">
-                            <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="jobs-list">
+                    <div class="job-item">
+                        <div class="job-icon">
+                            <i class="fas fa-home"></i>
                         </div>
-                        <h3>My Jobs</h3>
-                        <p>Track active jobs</p>
+                        <div class="job-details">
+                            <h4>Home Renovation Project</h4>
+                            <p>Complete home renovation in Delhi NCR • ₹25,000</p>
+                        </div>
+                        <span class="job-status active">Active</span>
+                    </div>
+
+                    <div class="job-item">
+                        <div class="job-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="job-details">
+                            <h4>Office Wiring</h4>
+                            <p>Complete electrical wiring for office • ₹15,000</p>
+                        </div>
+                        <span class="job-status completed">Completed</span>
+                    </div>
+
+                    <div class="job-item">
+                        <div class="job-icon">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                        <div class="job-details">
+                            <h4>Plumbing Installation</h4>
+                            <p>New bathroom plumbing installation • ₹18,000</p>
+                        </div>
+                        <span class="job-status pending">Pending</span>
+                    </div>
+
+                    <div class="job-item">
+                        <div class="job-icon">
+                            <i class="fas fa-paint-roller"></i>
+                        </div>
+                        <div class="job-details">
+                            <h4>House Painting</h4>
+                            <p>Complete exterior and interior painting • ₹22,000</p>
+                        </div>
+                        <span class="job-status active">Active</span>
+                    </div>
+
+                    <div class="job-item">
+                        <div class="job-icon">
+                            <i class="fas fa-hammer"></i>
+                        </div>
+                        <div class="job-details">
+                            <h4>Wall Construction</h4>
+                            <p>Boundary wall construction for property • ₹35,000</p>
+                        </div>
+                        <span class="job-status completed">Completed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Workers -->
+            <div class="top-workers glassmorphism">
+                <div class="workers-header">
+                    <h3><i class="fas fa-trophy"></i> Top Performing Workers</h3>
+                    <button class="btn btn-sm btn-outline" onclick="viewAllWorkers()">
+                        View All
                     </button>
                 </div>
-
-                <!-- Statistics Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card glassmorphism">
-                        <div class="stat-icon blue">
-                            <i class="fas fa-briefcase"></i>
+                <div class="workers-grid">
+                    <div class="worker-card">
+                        <div class="worker-info">
+                            <img src="https://picsum.photos/seed/worker1/50/50.jpg" alt="Worker" class="worker-avatar">
+                            <div class="worker-details">
+                                <h4>Raj Kumar</h4>
+                                <p>Carpenter • 4.5★</p>
+                            </div>
                         </div>
-                        <div class="stat-info">
-                            <h3>12</h3>
-                            <p>Active Jobs</p>
-                            <span class="stat-change positive">+3 this week</span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card glassmorphism">
-                        <div class="stat-icon green">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>28</h3>
-                            <p>Jobs Completed</p>
-                            <span class="stat-change positive">+8 this month</span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card glassmorphism">
-                        <div class="stat-icon orange">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>45</h3>
-                            <p>Workers Assigned</p>
-                            <span class="stat-change positive">+12 this month</span>
+                        <div class="worker-metrics">
+                            <div class="metric">
+                                <div class="metric-value">24</div>
+                                <div class="metric-label">Jobs</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">₹1.2L</div>
+                                <div class="metric-label">Revenue</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">98%</div>
+                                <div class="metric-label">Success</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="stat-card glassmorphism">
-                        <div class="stat-icon purple">
-                            <i class="fas fa-rupee-sign"></i>
+                    <div class="worker-card">
+                        <div class="worker-info">
+                            <img src="https://picsum.photos/seed/worker2/50/50.jpg" alt="Worker" class="worker-avatar">
+                            <div class="worker-details">
+                                <h4>Amit Singh</h4>
+                                <p>Electrician • 5.0★</p>
+                            </div>
                         </div>
-                        <div class="stat-info">
-                            <h3>₹1.2L</h3>
-                            <p>Total Spent</p>
-                            <span class="stat-change positive">+18% this month</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="activity-section">
-                    <div class="activity-card glassmorphism">
-                        <h3>Recent Activity</h3>
-                        <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon job">
-                                    <i class="fas fa-briefcase"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p>New job <strong>Home Renovation</strong> posted</p>
-                                    <small>2 hours ago</small>
-                                </div>
-                                <div class="activity-status">
-                                    <span class="status-badge pending">Pending</span>
-                                </div>
+                        <div class="worker-metrics">
+                            <div class="metric">
+                                <div class="metric-value">18</div>
+                                <div class="metric-label">Jobs</div>
                             </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon worker">
-                                    <i class="fas fa-user-plus"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p><strong>Raj Kumar</strong> assigned to <strong>Electrical Work</strong></p>
-                                    <small>4 hours ago</small>
-                                </div>
-                                <div class="activity-status">
-                                    <span class="status-badge assigned">Assigned</span>
-                                </div>
+                            <div class="metric">
+                                <div class="metric-value">₹0.9L</div>
+                                <div class="metric-label">Revenue</div>
                             </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon completed">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p>Job <strong>Plumbing Repair</strong> marked as completed</p>
-                                    <small>1 day ago</small>
-                                </div>
-                                <div class="activity-status">
-                                    <span class="status-badge completed">Completed</span>
-                                </div>
-                            </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon request">
-                                    <i class="fas fa-clipboard-list"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p>New request from <strong>Amit Singh</strong> for carpentry work</p>
-                                    <small>2 days ago</small>
-                                </div>
-                                <div class="activity-status">
-                                    <span class="status-badge pending">Pending</span>
-                                </div>
+                            <div class="metric">
+                                <div class="metric-value">100%</div>
+                                <div class="metric-label">Success</div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Charts Section -->
-                <div class="charts-grid">
-                    <div class="chart-card glassmorphism">
-                        <h3>Job Status Overview</h3>
-                        <canvas id="jobStatusChart"></canvas>
-                    </div>
-
-                    <div class="chart-card glassmorphism">
-                        <h3>Monthly Job Postings</h3>
-                        <canvas id="monthlyJobsChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Pending Requests -->
-                <div class="pending-requests">
-                    <div class="section-header">
-                        <h3>Pending Worker Requests</h3>
-                        <button class="btn btn-primary" onclick="goToRequests()">
-                            View All
-                        </button>
-                    </div>
-                    
-                    <div class="requests-grid">
-                        <div class="request-card glassmorphism">
-                            <div class="request-header">
-                                <h4>Carpentry Work Needed</h4>
-                                <span class="status-badge pending">Pending</span>
-                            </div>
-                            <div class="request-details">
-                                <p><strong>Worker:</strong> Mahesh Kumar</p>
-                                <p><strong>Category:</strong> Carpenter</p>
-                                <p><strong>Location:</strong> Delhi</p>
-                                <p><strong>Budget:</strong> ₹8,000</p>
-                            </div>
-                            <div class="request-actions">
-                                <button class="btn btn-sm btn-success" onclick="approveRequest('1')">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn btn-sm btn-secondary" onclick="viewRequest('1')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
+                    <div class="worker-card">
+                        <div class="worker-info">
+                            <img src="https://picsum.photos/seed/worker3/50/50.jpg" alt="Worker" class="worker-avatar">
+                            <div class="worker-details">
+                                <h4>Suresh Kumar</h4>
+                                <p>Plumber • 4.0★</p>
                             </div>
                         </div>
-
-                        <div class="request-card glassmorphism">
-                            <div class="request-header">
-                                <h4>Electrical Installation</h4>
-                                <span class="status-badge pending">Pending</span>
+                        <div class="worker-metrics">
+                            <div class="metric">
+                                <div class="metric-value">22</div>
+                                <div class="metric-label">Jobs</div>
                             </div>
-                            <div class="request-details">
-                                <p><strong>Worker:</strong> Suresh Kumar</p>
-                                <p><strong>Category:</strong> Electrician</p>
-                                <p><strong>Location:</strong> Mumbai</p>
-                                <p><strong>Budget:</strong> ₹5,000</p>
+                            <div class="metric">
+                                <div class="metric-value">₹1.0L</div>
+                                <div class="metric-label">Revenue</div>
                             </div>
-                            <div class="request-actions">
-                                <button class="btn btn-sm btn-success" onclick="approveRequest('2')">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn btn-sm btn-secondary" onclick="viewRequest('2')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
+                            <div class="metric">
+                                <div class="metric-value">95%</div>
+                                <div class="metric-label">Success</div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="request-card glassmorphism">
-                            <div class="request-header">
-                                <h4>Painting Service</h4>
-                                <span class="status-badge pending">Pending</span>
+                    <div class="worker-card">
+                        <div class="worker-info">
+                            <img src="https://picsum.photos/seed/worker4/50/50.jpg" alt="Worker" class="worker-avatar">
+                            <div class="worker-details">
+                                <h4>Mahesh Kumar</h4>
+                                <p>Painter • 4.5★</p>
                             </div>
-                            <div class="request-details">
-                                <p><strong>Worker:</strong> Ramesh Kumar</p>
-                                <p><strong>Category:</strong> Painter</p>
-                                <p><strong>Location:</strong> Bangalore</p>
-                                <p><strong>Budget:</strong> ₹6,000</p>
+                        </div>
+                        <div class="worker-metrics">
+                            <div class="metric">
+                                <div class="metric-value">20</div>
+                                <div class="metric-label">Jobs</div>
                             </div>
-                            <div class="request-actions">
-                                <button class="btn btn-sm btn-success" onclick="approveRequest('3')">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn btn-sm btn-secondary" onclick="viewRequest('3')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
+                            <div class="metric">
+                                <div class="metric-value">₹0.8L</div>
+                                <div class="metric-label">Revenue</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">92%</div>
+                                <div class="metric-label">Success</div>
                             </div>
                         </div>
                     </div>
@@ -326,93 +860,12 @@
             </div>
         </main>
     </div>
-
-    <!-- Post Job Modal -->
-    <div class="modal" id="postJobModal">
-        <div class="modal-content glassmorphism">
-            <div class="modal-header">
-                <h3>Post New Job</h3>
-                <button class="close-btn" onclick="closePostJobModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <form class="job-form" id="postJobForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jobTitle">Job Title *</label>
-                        <input type="text" id="jobTitle" required placeholder="e.g., Home Renovation">
-                    </div>
-                    <div class="form-group">
-                        <label for="jobType">Job Type *</label>
-                        <select id="jobType" required>
-                            <option value="">Select Type</option>
-                            <option value="carpentry">Carpentry</option>
-                            <option value="masonry">Masonry</option>
-                            <option value="painting">Painting</option>
-                            <option value="electrical">Electrical</option>
-                            <option value="plumbing">Plumbing</option>
-                            <option value="transportation">Transportation</option>
-                            <option value="cleaning">Cleaning</option>
-                            <option value="construction">Construction</option>
-                            <option value="security">Security</option>
-                            <option value="delivery">Delivery</option>
-                            <option value="farming">Farming</option>
-                            <option value="welding">Welding</option>
-                            <option value="mechanical">Mechanical</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jobLocation">Location *</label>
-                        <select id="jobLocation" required>
-                            <option value="">Select Location</option>
-                            <option value="delhi">Delhi</option>
-                            <option value="mumbai">Mumbai</option>
-                            <option value="bangalore">Bangalore</option>
-                            <option value="chennai">Chennai</option>
-                            <option value="kolkata">Kolkata</option>
-                            <option value="hyderabad">Hyderabad</option>
-                            <option value="pune">Pune</option>
-                            <option value="jaipur">Jaipur</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="jobPayment">Payment Amount (₹) *</label>
-                        <input type="number" id="jobPayment" min="0" required placeholder="5000">
-                    </div>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="jobDescription">Job Description *</label>
-                    <textarea id="jobDescription" rows="4" required placeholder="Provide detailed job requirements..."></textarea>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="jobTimeline">Timeline</label>
-                    <input type="text" id="jobTimeline" placeholder="e.g., 2 weeks, 1 month">
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closePostJobModal()">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i>
-                        Post Job
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
     
     <!-- Footer -->
     <footer class="crm-footer">
         <div class="footer-content">
-            <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
-            <p>Contact: contact@12th-failjobs.com</p>
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
             <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
                 <i class="fas fa-external-link-alt"></i> Official Website
             </a></p>
@@ -420,6 +873,137 @@
     </footer>
 
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="sidebar-toggle.js"></script>
+    <script>
+        // Simple navigation fix
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            // Add click event to each link
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Skip logout and empty links
+                    if (href === '#' || href.includes('logout')) {
+                        return;
+                    }
+                    
+                    // Navigate to the page
+                    window.location.href = href;
+                });
+            });
+            
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('a[href*="logout"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            });
+
+            // Initialize charts
+            initializeCharts();
+        });
+
+        // Dashboard functions
+        function searchDashboard(searchTerm) {
+            console.log('Searching dashboard:', searchTerm);
+            // Implementation for search functionality
+        }
+
+        function exportDashboard() {
+            console.log('Exporting dashboard data');
+            // Implementation for export functionality
+        }
+
+        function refreshDashboard() {
+            console.log('Refreshing dashboard');
+            location.reload();
+        }
+
+        function viewAllJobs() {
+            console.log('Viewing all jobs');
+            window.location.href = 'jobs.html';
+        }
+
+        function viewAllWorkers() {
+            console.log('Viewing all workers');
+            window.location.href = 'workers.html';
+        }
+
+        function initializeCharts() {
+            // Job Performance Chart
+            const jobCtx = document.getElementById('jobPerformanceChart').getContext('2d');
+            new Chart(jobCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Jobs Posted',
+                        data: [12, 19, 18, 25, 22, 30],
+                        borderColor: '#004e92',
+                        backgroundColor: 'rgba(0, 78, 146, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Jobs Completed',
+                        data: [8, 12, 15, 18, 14, 20],
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Category Distribution Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Construction', 'Electrical', 'Plumbing', 'Painting', 'Others'],
+                    datasets: [{
+                        data: [35, 25, 20, 15, 5],
+                        backgroundColor: [
+                            '#004e92',
+                            '#4caf50',
+                            '#ff6b6b',
+                            '#ffa726',
+                            '#ab47bc'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    <script src="modal-system.js"></script>
 </body>
 </html>

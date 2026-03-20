@@ -3,9 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12th FailJobs CRM - Jobs</title>
+    <title>Jobs Management - 12th FailJobs CRM</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Jobs Styles */
+        .jobs-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #ab47bc, #7e57c2);
+            color: white;
+        }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .stat-info p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .stat-change.negative {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .stat-change.neutral {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .filters-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #004e92;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 78, 146, 0.1);
+        }
+
+        .jobs-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .jobs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .jobs-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: -20px;
+            padding: 20px;
+        }
+
+        .jobs-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .jobs-table th,
+        .jobs-table td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .jobs-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .jobs-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .job-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .job-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .job-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .job-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .client-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .client-info a {
+            color: #004e92;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .client-info a:hover {
+            text-decoration: underline;
+        }
+
+        .budget-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .budget-amount {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        .budget-range {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .worker-assignment {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .worker-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #004e92;
+        }
+
+        .worker-count {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .job-actions .btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-controls .btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-controls .btn.active {
+            background: #004e92;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .jobs-content {
+                padding: 20px;
+            }
+
+            .filters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .jobs-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .jobs-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .table-responsive {
+                margin: -15px;
+                padding: 15px;
+            }
+
+            .jobs-table th,
+            .jobs-table td {
+                padding: 15px 10px;
+            }
+
+            .job-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .job-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .jobs-content {
+                padding: 10px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .filters-section {
+                padding: 20px;
+            }
+
+            .jobs-section {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body class="crm-page">
     <!-- Floating Particles -->
@@ -69,9 +521,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="settings.html">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
+                    <a href="admin-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
                     </a>
                 </li>
                 <li class="logout">
@@ -84,7 +536,7 @@
         </nav>
     </aside>
 
-    <!-- Main Dashboard Container -->
+    <!-- Main Content -->
     <div class="dashboard-container">
         <!-- Header -->
         <header class="dashboard-header glassmorphism">
@@ -96,265 +548,792 @@
             </div>
             <div class="header-right">
                 <div class="search-bar glassmorphism">
-                    <input type="text" id="jobSearch" placeholder="Search jobs by title, location, or worker...">
+                    <input type="text" placeholder="Search jobs..." onkeyup="searchJobs(this.value)">
                     <i class="fas fa-search"></i>
                 </div>
-                <div class="notifications">
-                    <button class="notification-btn" onclick="toggleNotifications()">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
+                <div class="header-actions">
+                    <button class="btn btn-secondary glassmorphism" onclick="exportJobs()">
+                        <i class="fas fa-download"></i> Export
                     </button>
-                    <div class="notification-dropdown glassmorphism" id="notificationDropdown">
-                        <div class="notification-item">
-                            <i class="fas fa-user-plus"></i>
-                            <div>
-                                <p>New worker registered</p>
-                                <small>2 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-briefcase"></i>
-                            <div>
-                                <p>New job request</p>
-                                <small>5 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-check-circle"></i>
-                            <div>
-                                <p>Job completed</p>
-                                <small>1 hour ago</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-profile glassmorphism">
-                    <img src="https://picsum.photos/seed/admin/40/40.jpg" alt="Admin">
-                    <span>Admin</span>
+                    <button class="btn btn-primary glassmorphism" onclick="addJob()">
+                        <i class="fas fa-plus"></i> Add Job
+                    </button>
                 </div>
             </div>
         </header>
 
         <!-- Jobs Content -->
         <main class="jobs-content">
-            <div class="content-header glassmorphism">
-                <h1>Jobs Management</h1>
-                <div class="actions">
-                    <div class="search-bar glassmorphism">
-                        <input type="text" id="jobSearch" placeholder="Search jobs..." onkeyup="filterJobs(this.value)">
-                        <i class="fas fa-search"></i>
+            <!-- Statistics Cards -->
+            <div class="stats-grid glassmorphism">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-briefcase"></i>
                     </div>
-                    <select class="filter-select glassmorphism" id="statusFilter" onchange="filterJobsByStatus()">
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
-                    <select class="filter-select glassmorphism" id="categoryFilter" onchange="filterJobsByCategory()">
-                        <option value="">All Categories</option>
-                        <option value="Carpentry">Carpentry</option>
-                        <option value="Electrical">Electrical</option>
-                        <option value="Plumbing">Plumbing</option>
-                        <option value="Painting">Painting</option>
-                    </select>
-                    <button class="btn btn-primary glassmorphism" onclick="openAddJobModal()">
-                        <i class="fas fa-plus"></i>
-                        Create Job
+                    <div class="stat-info">
+                        <h3>156</h3>
+                        <p>Total Jobs</p>
+                        <span class="stat-change positive">+24 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>89</h3>
+                        <p>Active</p>
+                        <span class="stat-change positive">+18 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>52</h3>
+                        <p>Completed</p>
+                        <span class="stat-change positive">+6 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>₹3.2L</h3>
+                        <p>Total Value</p>
+                        <span class="stat-change positive">+₹0.8L this month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section glassmorphism">
+                <div class="filters-header">
+                    <h3><i class="fas fa-filter"></i> Filter Jobs</h3>
+                    <button class="btn btn-sm btn-outline" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Clear Filters
                     </button>
                 </div>
-            </div>
-            
-            <!-- Jobs Table -->
-            <div class="jobs-container glassmorphism">
-                <table class="jobs-table">
-                    <thead>
-                        <tr>
-                            <th>Job ID</th>
-                            <th>Title</th>
-                            <th>Category</th>
-                            <th>Location</th>
-                            <th>Worker</th>
-                            <th>Status</th>
-                            <th>Payment</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>#JOB001</td>
-                            <td>Home Renovation</td>
-                            <td>Carpentry</td>
-                            <td>Mumbai, Maharashtra</td>
-                            <td>Raj Kumar</td>
-                            <td><span class="job-status in-progress">In Progress</span></td>
-                            <td>₹5,000</td>
-                            <td>
-                                <button class="btn btn-sm btn-secondary" onclick="editJob('JOB001')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB001')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#JOB002</td>
-                            <td>Electrical Wiring</td>
-                            <td>Electrical</td>
-                            <td>Delhi, NCR</td>
-                            <td>Amit Singh</td>
-                            <td><span class="job-status completed">Completed</span></td>
-                            <td>₹3,500</td>
-                            <td>
-                                <button class="btn btn-sm btn-secondary" onclick="editJob('JOB002')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB002')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#JOB003</td>
-                            <td>Bathroom Plumbing</td>
-                            <td>Plumbing</td>
-                            <td>Pune, Maharashtra</td>
-                            <td>Suresh Patil</td>
-                            <td><span class="job-status pending">Pending</span></td>
-                            <td>₹2,800</td>
-                            <td>
-                                <button class="btn btn-sm btn-secondary" onclick="editJob('JOB003')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB003')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </main>
-
-        <!-- Pagination -->
-        <div class="pagination glassmorphism">
-            <button class="pagination-btn" onclick="previousPage()">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <span class="page-info">Page 1 of 5</span>
-            <button class="pagination-btn" onclick="nextPage()">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Add/Edit Job Modal -->
-    <div class="modal" id="jobModal">
-        <div class="modal-content glassmorphism">
-            <div class="modal-header">
-                <h3 id="modalTitle">Create New Job</h3>
-                <button class="close-btn" onclick="closeJobModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <form class="job-form" id="jobForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jobTitle">Job Title *</label>
-                        <input type="text" id="jobTitle" required placeholder="e.g., Home Renovation">
-                    </div>
-                    <div class="form-group">
-                        <label for="jobType">Job Type *</label>
-                        <select id="jobType" required>
-                            <option value="">Select Type</option>
-                            <option value="carpentry">Carpentry</option>
-                            <option value="masonry">Masonry</option>
-                            <option value="painting">Painting</option>
-                            <option value="electrical">Electrical</option>
-                            <option value="plumbing">Plumbing</option>
-                            <option value="transportation">Transportation</option>
-                            <option value="cleaning">Cleaning</option>
-                            <option value="construction">Construction</option>
-                            <option value="security">Security</option>
-                            <option value="delivery">Delivery</option>
-                            <option value="farming">Farming</option>
-                            <option value="welding">Welding</option>
-                            <option value="mechanical">Mechanical</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jobLocation">Location *</label>
-                        <select id="jobLocation" required>
-                            <option value="">Select Location</option>
-                            <option value="delhi">Delhi</option>
-                            <option value="mumbai">Mumbai</option>
-                            <option value="bangalore">Bangalore</option>
-                            <option value="chennai">Chennai</option>
-                            <option value="kolkata">Kolkata</option>
-                            <option value="hyderabad">Hyderabad</option>
-                            <option value="pune">Pune</option>
-                            <option value="jaipur">Jaipur</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="jobWorker">Assign Worker</label>
-                        <select id="jobWorker">
-                            <option value="">Select Worker (Optional)</option>
-                            <!-- Workers will be dynamically populated -->
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jobPayment">Payment Amount (₹) *</label>
-                        <input type="number" id="jobPayment" min="0" required placeholder="5000">
-                    </div>
-                    <div class="form-group">
-                        <label for="jobStatus">Status *</label>
-                        <select id="jobStatus" required>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="statusFilter">Status</label>
+                        <select id="statusFilter" onchange="applyFilters()">
+                            <option value="">All Status</option>
                             <option value="pending">Pending</option>
-                            <option value="assigned">Assigned</option>
                             <option value="in-progress">In Progress</option>
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>
                         </select>
                     </div>
+                    <div class="filter-group">
+                        <label for="categoryFilter">Category</label>
+                        <select id="categoryFilter" onchange="applyFilters()">
+                            <option value="">All Categories</option>
+                            <option value="construction">Construction</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="painting">Painting</option>
+                            <option value="masonry">Masonry</option>
+                            <option value="welding">Welding</option>
+                            <option value="mechanical">Mechanical</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="security">Security</option>
+                            <option value="delivery">Delivery</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="priorityFilter">Priority</label>
+                        <select id="priorityFilter" onchange="applyFilters()">
+                            <option value="">All Priorities</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateFilter">Date Range</label>
+                        <input type="date" id="dateFilter" onchange="applyFilters()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Table -->
+            <div class="jobs-section glassmorphism">
+                <div class="jobs-header">
+                    <h3><i class="fas fa-list"></i> All Jobs</h3>
+                    <div class="header-actions">
+                        <button class="btn btn-sm btn-success" onclick="bulkComplete()">
+                            <i class="fas fa-check"></i> Bulk Complete
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="bulkCancel()">
+                            <i class="fas fa-times"></i> Bulk Cancel
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="bulkDelete()">
+                            <i class="fas fa-trash"></i> Bulk Delete
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="jobs-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Job ID</th>
+                                <th>Job Details</th>
+                                <th>Client</th>
+                                <th>Category</th>
+                                <th>Budget</th>
+                                <th>Workers</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobsTableBody">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB001">
+                                </td>
+                                <td><strong>JOB001</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-home"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Home Renovation Project</h4>
+                                            <p>Complete home renovation in Delhi NCR</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543210">+91 98765 43210</a>
+                                        <a href="mailto:client@email.com">client@email.com</a>
+                                        <small>Amit Sharma</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag construction">Construction</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹25,000</div>
+                                        <div class="budget-range">₹20,000 - ₹30,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker1/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <img src="https://picsum.photos/seed/worker2/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 2 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge in-progress">In Progress</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB001')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB001')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB001')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB001')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB002">
+                                </td>
+                                <td><strong>JOB002</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-bolt"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Office Wiring</h4>
+                                            <p>Complete electrical wiring for office</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543211">+91 98765 43211</a>
+                                        <a href="mailto:client2@email.com">client2@email.com</a>
+                                        <small>Priya Patel</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag electrical">Electrical</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹15,000</div>
+                                        <div class="budget-range">₹12,000 - ₹18,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker3/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 1 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge completed">Completed</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB002')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB002')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB002')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB002')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB003">
+                                </td>
+                                <td><strong>JOB003</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-wrench"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Plumbing Installation</h4>
+                                            <p>New bathroom plumbing installation</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543212">+91 98765 43212</a>
+                                        <a href="mailto:client3@email.com">client3@email.com</a>
+                                        <small>Rahul Gupta</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag plumbing">Plumbing</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹18,000</div>
+                                        <div class="budget-range">₹15,000 - ₹20,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker4/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 1 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge pending">Pending</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB003')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB003')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB003')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB003')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB004">
+                                </td>
+                                <td><strong>JOB004</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-paint-roller"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>House Painting</h4>
+                                            <p>Complete exterior and interior painting</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543213">+91 98765 43213</a>
+                                        <a href="mailto:client4@email.com">client4@email.com</a>
+                                        <small>Neha Singh</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag painting">Painting</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹22,000</div>
+                                        <div class="budget-range">₹20,000 - ₹25,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker5/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <img src="https://picsum.photos/seed/worker6/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 2 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge in-progress">In Progress</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB004')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB004')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB004')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB004')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB005">
+                                </td>
+                                <td><strong>JOB005</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-hammer"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Wall Construction</h4>
+                                            <p>Boundary wall construction for property</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543214">+91 98765 43214</a>
+                                        <a href="mailto:client5@email.com">client5@email.com</a>
+                                        <small>Vikram Reddy</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag masonry">Masonry</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹35,000</div>
+                                        <div class="budget-range">₹30,000 - ₹40,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker7/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <img src="https://picsum.photos/seed/worker8/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <img src="https://picsum.photos/seed/worker9/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 3 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge completed">Completed</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB005')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB005')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB005')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB005')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB006">
+                                </td>
+                                <td><strong>JOB006</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-fire"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Welding Work</h4>
+                                            <p>Industrial welding for machinery</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543215">+91 98765 43215</a>
+                                        <a href="mailto:client6@email.com">client6@email.com</a>
+                                        <small>Arun Kumar</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag welding">Welding</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹28,000</div>
+                                        <div class="budget-range">₹25,000 - ₹30,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker10/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 1 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge in-progress">In Progress</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB006')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB006')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB006')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB006')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB007">
+                                </td>
+                                <td><strong>JOB007</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-cog"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Equipment Repair</h4>
+                                            <p>Industrial equipment repair and maintenance</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543216">+91 98765 43216</a>
+                                        <a href="mailto:client7@email.com">client7@email.com</a>
+                                        <small>Suresh Mehta</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag mechanical">Mechanical</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹12,000</div>
+                                        <div class="budget-range">₹10,000 - ₹15,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker11/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 1 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge completed">Completed</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB007')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB007')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB007')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB007')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB008">
+                                </td>
+                                <td><strong>JOB008</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-broom"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Office Cleaning</h4>
+                                            <p>Complete office cleaning service</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543217">+91 98765 43217</a>
+                                        <a href="mailto:client8@email.com">client8@email.com</a>
+                                        <small>Kavita Joshi</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag cleaning">Cleaning</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹8,000</div>
+                                        <div class="budget-range">₹6,000 - ₹10,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker12/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <img src="https://picsum.photos/seed/worker13/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 2 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge pending">Pending</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB008')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB008')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB008')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB008')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB009">
+                                </td>
+                                <td><strong>JOB009</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Security Services</h4>
+                                            <p>Event security for corporate function</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543218">+91 98765 43218</a>
+                                        <a href="mailto:client9@email.com">client9@email.com</a>
+                                        <small>Rajesh Kumar</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag security">Security</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹15,000</div>
+                                        <div class="budget-range">₹12,000 - ₹18,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker14/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <img src="https://picsum.photos/seed/worker15/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <img src="https://picsum.photos/seed/worker16/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 3 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge completed">Completed</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB009')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB009')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB009')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB009')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="job-checkbox" value="JOB010">
+                                </td>
+                                <td><strong>JOB010</strong></td>
+                                <td>
+                                    <div class="job-info">
+                                        <div class="job-icon">
+                                            <i class="fas fa-truck"></i>
+                                        </div>
+                                        <div class="job-details">
+                                            <h4>Logistics Delivery</h4>
+                                            <p>Goods delivery and transportation</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <a href="tel:+919876543219">+91 98765 43219</a>
+                                        <a href="mailto:client10@email.com">client10@email.com</a>
+                                        <small>Anand Verma</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag delivery">Delivery</span>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <div class="budget-amount">₹10,000</div>
+                                        <div class="budget-range">₹8,000 - ₹12,000</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-assignment">
+                                        <img src="https://picsum.photos/seed/worker17/30/30.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-count">
+                                            <i class="fas fa-users"></i> 1 assigned
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge cancelled">Cancelled</span>
+                                </td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewJob('JOB010')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editJob('JOB010')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignWorkers('JOB010')">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJob('JOB010')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="form-group full-width">
-                    <label for="jobDescription">Job Description</label>
-                    <textarea id="jobDescription" rows="4" placeholder="Provide detailed job requirements..."></textarea>
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="pagination-info">
+                        Showing 1-10 of 156 jobs
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-outline" onclick="previousPage()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-sm active">1</button>
+                        <button class="btn btn-sm btn-outline" onclick="goToPage(2)">2</button>
+                        <button class="btn btn-sm btn-outline" onclick="goToPage(3)">3</button>
+                        <button class="btn btn-sm btn-outline" onclick="nextPage()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
-
-                <div class="form-group full-width">
-                    <label for="jobClientInfo">Client Information</label>
-                    <input type="text" id="jobClientInfo" placeholder="Client name and contact details">
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeJobModal()">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Save Job
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+        </main>
     </div>
     
     <!-- Footer -->
     <footer class="crm-footer">
         <div class="footer-content">
-            <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
-            <p>Contact: contact@12th-failjobs.com</p>
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
             <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
                 <i class="fas fa-external-link-alt"></i> Official Website
             </a></p>
@@ -362,5 +1341,161 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="sidebar-toggle.js"></script>
+    <script>
+        // Simple navigation fix
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            // Add click event to each link
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Skip logout and empty links
+                    if (href === '#' || href.includes('logout')) {
+                        return;
+                    }
+                    
+                    // Navigate to the page
+                    window.location.href = href;
+                });
+            });
+            
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('a[href*="logout"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            });
+        });
+
+        // Jobs management functions
+        function searchJobs(searchTerm) {
+            console.log('Searching jobs:', searchTerm);
+            // Implementation for search functionality
+        }
+
+        function exportJobs() {
+            console.log('Exporting jobs data');
+            // Implementation for export functionality
+        }
+
+        function addJob() {
+            console.log('Adding new job');
+            // Implementation for add job modal
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            const date = document.getElementById('dateFilter').value;
+            
+            console.log('Applying filters:', { status, category, priority, date });
+            // Implementation for filter functionality
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            
+            console.log('Filters cleared');
+            // Implementation for clear filters
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.job-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        function bulkComplete() {
+            const selectedCheckboxes = document.querySelectorAll('.job-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one job to complete');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to mark ${selectedCheckboxes.length} jobs as completed?`)) {
+                console.log('Bulk completing jobs');
+                // Implementation for bulk complete
+            }
+        }
+
+        function bulkCancel() {
+            const selectedCheckboxes = document.querySelectorAll('.job-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one job to cancel');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to cancel ${selectedCheckboxes.length} jobs?`)) {
+                console.log('Bulk cancelling jobs');
+                // Implementation for bulk cancel
+            }
+        }
+
+        function bulkDelete() {
+            const selectedCheckboxes = document.querySelectorAll('.job-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one job to delete');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${selectedCheckboxes.length} jobs? This action cannot be undone.`)) {
+                console.log('Bulk deleting jobs');
+                // Implementation for bulk delete
+            }
+        }
+
+        function viewJob(jobId) {
+            console.log('Viewing job:', jobId);
+            // Implementation for view job modal
+        }
+
+        function editJob(jobId) {
+            console.log('Editing job:', jobId);
+            // Implementation for edit job modal
+        }
+
+        function assignWorkers(jobId) {
+            console.log('Assigning workers to job:', jobId);
+            // Implementation for assign workers modal
+        }
+
+        function deleteJob(jobId) {
+            if (confirm(`Are you sure you want to delete job ${jobId}? This action cannot be undone.`)) {
+                console.log('Deleting job:', jobId);
+                // Implementation for delete job
+            }
+        }
+
+        function previousPage() {
+            console.log('Going to previous page');
+            // Implementation for pagination
+        }
+
+        function nextPage() {
+            console.log('Going to next page');
+            // Implementation for pagination
+        }
+
+        function goToPage(page) {
+            console.log('Going to page:', page);
+            // Implementation for pagination
+        }
+    </script>
+    <script src="modal-system.js"></script>
 </body>
 </html>

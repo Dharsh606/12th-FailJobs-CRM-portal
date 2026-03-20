@@ -3,9 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12th FailJobs CRM - Workers</title>
+    <title>Workers Management - 12th FailJobs CRM</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Workers Styles */
+        .workers-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #ab47bc, #7e57c2);
+            color: white;
+        }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .stat-info p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .stat-change.negative {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .stat-change.neutral {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .filters-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #004e92;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 78, 146, 0.1);
+        }
+
+        .workers-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .workers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .workers-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: -20px;
+            padding: 20px;
+        }
+
+        .workers-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .workers-table th,
+        .workers-table td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .workers-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .workers-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .worker-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .worker-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #004e92;
+        }
+
+        .worker-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .worker-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .worker-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .worker-contact a {
+            color: #004e92;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .worker-contact a:hover {
+            text-decoration: underline;
+        }
+
+        .worker-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .worker-actions .btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-controls .btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-controls .btn.active {
+            background: #004e92;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .workers-content {
+                padding: 20px;
+            }
+
+            .filters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .workers-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workers-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .table-responsive {
+                margin: -15px;
+                padding: 15px;
+            }
+
+            .workers-table th,
+            .workers-table td {
+                padding: 15px 10px;
+            }
+
+            .worker-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .worker-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .workers-content {
+                padding: 10px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .filters-section {
+                padding: 20px;
+            }
+
+            .workers-section {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body class="crm-page">
     <!-- Floating Particles -->
@@ -69,9 +477,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="settings.html">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
+                    <a href="admin-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
                     </a>
                 </li>
                 <li class="logout">
@@ -84,7 +492,7 @@
         </nav>
     </aside>
 
-    <!-- Main Dashboard Container -->
+    <!-- Main Content -->
     <div class="dashboard-container">
         <!-- Header -->
         <header class="dashboard-header glassmorphism">
@@ -92,311 +500,736 @@
                 <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>Workers</h1>
+                <h1>Workers Management</h1>
             </div>
             <div class="header-right">
                 <div class="search-bar glassmorphism">
-                    <input type="text" placeholder="Search workers...">
+                    <input type="text" placeholder="Search workers..." onkeyup="searchWorkers(this.value)">
                     <i class="fas fa-search"></i>
                 </div>
-                <div class="notifications">
-                    <button class="notification-btn" onclick="toggleNotifications()">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
+                <div class="header-actions">
+                    <button class="btn btn-secondary glassmorphism" onclick="exportWorkers()">
+                        <i class="fas fa-download"></i> Export
                     </button>
-                    <div class="notification-dropdown glassmorphism" id="notificationDropdown">
-                        <div class="notification-item">
-                            <i class="fas fa-user-plus"></i>
-                            <div>
-                                <p>New worker registered</p>
-                                <small>2 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-briefcase"></i>
-                            <div>
-                                <p>New job request</p>
-                                <small>5 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-check-circle"></i>
-                            <div>
-                                <p>Job completed</p>
-                                <small>1 hour ago</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-profile glassmorphism">
-                    <img src="https://picsum.photos/seed/admin/40/40.jpg" alt="Admin">
-                    <span>Admin</span>
+                    <button class="btn btn-primary glassmorphism" onclick="addWorker()">
+                        <i class="fas fa-plus"></i> Add Worker
+                    </button>
                 </div>
             </div>
         </header>
 
         <!-- Workers Content -->
         <main class="workers-content">
-            <div class="content-header glassmorphism">
-                <h1>Workers Management</h1>
-                <div class="actions">
-                    <div class="search-bar glassmorphism">
-                        <input type="text" id="workerSearch" placeholder="Search workers..." onkeyup="filterWorkers(this.value)">
-                        <i class="fas fa-search"></i>
+            <!-- Statistics Cards -->
+            <div class="stats-grid glassmorphism">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <select class="filter-select glassmorphism" id="categoryFilter" onchange="filterWorkersByCategory()">
-                        <option value="">All Categories</option>
-                        <option value="Carpenter">Carpenter</option>
-                        <option value="Electrician">Electrician</option>
-                        <option value="Plumber">Plumber</option>
-                        <option value="Painter">Painter</option>
-                        <option value="Mechanic">Mechanic</option>
-                    </select>
-                    <select class="filter-select glassmorphism" id="statusFilter" onchange="filterWorkersByStatus()">
-                        <option value="">All Status</option>
-                        <option value="available">Available</option>
-                        <option value="busy">Busy</option>
-                        <option value="offline">Offline</option>
-                    </select>
-                    <button class="btn btn-primary glassmorphism" onclick="openAddWorkerModal()">
-                        <i class="fas fa-plus"></i>
-                        Add Worker
-                    </button>
+                    <div class="stat-info">
+                        <h3>248</h3>
+                        <p>Total Workers</p>
+                        <span class="stat-change positive">+18 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>186</h3>
+                        <p>Available</p>
+                        <span class="stat-change positive">+12 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>52</h3>
+                        <p>Working</p>
+                        <span class="stat-change neutral">+6 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>4.6</h3>
+                        <p>Avg Rating</p>
+                        <span class="stat-change positive">+0.2 this month</span>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Workers Grid -->
-            <div class="workers-grid" id="workersGrid">
-                <div class="worker-card glassmorphism">
-                    <div class="worker-header">
-                        <div class="worker-avatar">RK</div>
-                        <div class="worker-info">
-                            <h4>Raj Kumar</h4>
-                            <p>Carpenter</p>
-                        </div>
-                    </div>
-                    <div class="worker-details">
-                        <div class="worker-detail">
-                            <i class="fas fa-phone"></i>
-                            <span>+91 9876543210</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Mumbai, Maharashtra</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-briefcase"></i>
-                            <span>5 years experience</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-star"></i>
-                            <span>Rating: 4.5/5</span>
-                        </div>
-                    </div>
-                    <div class="worker-status">
-                        <span class="status-badge available">Available</span>
-                        <div class="worker-actions">
-                            <button class="btn btn-sm btn-secondary" onclick="editWorker('1')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteWorker('1')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="worker-card glassmorphism">
-                    <div class="worker-header">
-                        <div class="worker-avatar">AS</div>
-                        <div class="worker-info">
-                            <h4>Amit Singh</h4>
-                            <p>Electrician</p>
-                        </div>
-                    </div>
-                    <div class="worker-details">
-                        <div class="worker-detail">
-                            <i class="fas fa-phone"></i>
-                            <span>+91 8765432109</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Delhi, NCR</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-briefcase"></i>
-                            <span>3 years experience</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-star"></i>
-                            <span>Rating: 4.8/5</span>
-                        </div>
-                    </div>
-                    <div class="worker-status">
-                        <span class="status-badge busy">Busy</span>
-                        <div class="worker-actions">
-                            <button class="btn btn-sm btn-secondary" onclick="editWorker('2')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteWorker('2')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="worker-card glassmorphism">
-                    <div class="worker-header">
-                        <div class="worker-avatar">SP</div>
-                        <div class="worker-info">
-                            <h4>Suresh Patil</h4>
-                            <p>Plumber</p>
-                        </div>
-                    </div>
-                    <div class="worker-details">
-                        <div class="worker-detail">
-                            <i class="fas fa-phone"></i>
-                            <span>+91 7654321098</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Pune, Maharashtra</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-briefcase"></i>
-                            <span>7 years experience</span>
-                        </div>
-                        <div class="worker-detail">
-                            <i class="fas fa-star"></i>
-                            <span>Rating: 4.2/5</span>
-                        </div>
-                    </div>
-                    <div class="worker-status">
-                        <span class="status-badge available">Available</span>
-                        <div class="worker-actions">
-                            <button class="btn btn-sm btn-secondary" onclick="editWorker('3')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteWorker('3')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                        <i class="fas fa-chevron-right"></i>
+
+            <!-- Filters Section -->
+            <div class="filters-section glassmorphism">
+                <div class="filters-header">
+                    <h3><i class="fas fa-filter"></i> Filter Workers</h3>
+                    <button class="btn btn-sm btn-outline" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Clear Filters
                     </button>
+                </div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="statusFilter">Status</label>
+                        <select id="statusFilter" onchange="applyFilters()">
+                            <option value="">All Status</option>
+                            <option value="available">Available</option>
+                            <option value="working">Working</option>
+                            <option value="on-leave">On Leave</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="categoryFilter">Category</label>
+                        <select id="categoryFilter" onchange="applyFilters()">
+                            <option value="">All Categories</option>
+                            <option value="carpentry">Carpentry</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="painting">Painting</option>
+                            <option value="masonry">Masonry</option>
+                            <option value="welding">Welding</option>
+                            <option value="mechanical">Mechanical</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="security">Security</option>
+                            <option value="delivery">Delivery</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="experienceFilter">Experience</label>
+                        <select id="experienceFilter" onchange="applyFilters()">
+                            <option value="">All Experience</option>
+                            <option value="0-1">0-1 years</option>
+                            <option value="1-3">1-3 years</option>
+                            <option value="3-5">3-5 years</option>
+                            <option value="5+">5+ years</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="ratingFilter">Rating</label>
+                        <select id="ratingFilter" onchange="applyFilters()">
+                            <option value="">All Ratings</option>
+                            <option value="5">5 Stars</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="3">3+ Stars</option>
+                            <option value="2">2+ Stars</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workers Table -->
+            <div class="workers-section glassmorphism">
+                <div class="workers-header">
+                    <h3><i class="fas fa-list"></i> All Workers</h3>
+                    <div class="header-actions">
+                        <button class="btn btn-sm btn-success" onclick="bulkActivate()">
+                            <i class="fas fa-check"></i> Bulk Activate
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="bulkSuspend()">
+                            <i class="fas fa-pause"></i> Bulk Suspend
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="bulkDelete()">
+                            <i class="fas fa-trash"></i> Bulk Delete
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="workers-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Worker ID</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Category</th>
+                                <th>Experience</th>
+                                <th>Rating</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workersTableBody">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W001">
+                                </td>
+                                <td><strong>W001</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker1/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Raj Kumar</h4>
+                                            <p>Carpenter • Age: 28</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543210">+91 98765 43210</a>
+                                        <a href="mailto:raj.kumar@email.com">raj.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag carpentry">Carpentry</span>
+                                </td>
+                                <td>4 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                        <small>(4.5)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge available">Available</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W001')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W001')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W001')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W001')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W002">
+                                </td>
+                                <td><strong>W002</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker2/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Amit Singh</h4>
+                                            <p>Electrician • Age: 32</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543211">+91 98765 43211</a>
+                                        <a href="mailto:amit.singh@email.com">amit.singh@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag electrical">Electrical</span>
+                                </td>
+                                <td>6 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <small>(5.0)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge working">Working</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W002')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W002')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W002')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W002')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W003">
+                                </td>
+                                <td><strong>W003</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker3/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Suresh Kumar</h4>
+                                            <p>Plumber • Age: 35</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543212">+91 98765 43212</a>
+                                        <a href="mailto:suresh.kumar@email.com">suresh.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag plumbing">Plumbing</span>
+                                </td>
+                                <td>8 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <small>(4.0)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge available">Available</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W003')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W003')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W003')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W003')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W004">
+                                </td>
+                                <td><strong>W004</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker4/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Mahesh Kumar</h4>
+                                            <p>Painter • Age: 29</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543213">+91 98765 43213</a>
+                                        <a href="mailto:mahesh.kumar@email.com">mahesh.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag painting">Painting</span>
+                                </td>
+                                <td>3 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                        <small>(4.5)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge on-leave">On Leave</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W004')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W004')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W004')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W004')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W005">
+                                </td>
+                                <td><strong>W005</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker5/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Ramesh Kumar</h4>
+                                            <p>Mason • Age: 38</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543214">+91 98765 43214</a>
+                                        <a href="mailto:ramesh.kumar@email.com">ramesh.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag masonry">Masonry</span>
+                                </td>
+                                <td>10 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <small>(5.0)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge working">Working</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W005')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W005')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W005')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W005')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W006">
+                                </td>
+                                <td><strong>W006</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker6/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Vijay Kumar</h4>
+                                            <p>Welder • Age: 31</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543215">+91 98765 43215</a>
+                                        <a href="mailto:vijay.kumar@email.com">vijay.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag welding">Welding</span>
+                                </td>
+                                <td>5 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <small>(4.0)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge available">Available</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W006')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W006')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W006')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W006')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W007">
+                                </td>
+                                <td><strong>W007</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker7/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Anil Kumar</h4>
+                                            <p>Mechanic • Age: 34</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543216">+91 98765 43216</a>
+                                        <a href="mailto:anil.kumar@email.com">anil.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag mechanical">Mechanical</span>
+                                </td>
+                                <td>7 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                        <small>(4.5)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge available">Available</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W007')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W007')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W007')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W007')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W008">
+                                </td>
+                                <td><strong>W008</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker8/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Rahul Kumar</h4>
+                                            <p>Cleaner • Age: 26</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543217">+91 98765 43217</a>
+                                        <a href="mailto:rahul.kumar@email.com">rahul.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag cleaning">Cleaning</span>
+                                </td>
+                                <td>2 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <small>(4.0)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge suspended">Suspended</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W008')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W008')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W008')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W008')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W009">
+                                </td>
+                                <td><strong>W009</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker9/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Ravi Kumar</h4>
+                                            <p>Security • Age: 30</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543218">+91 98765 43218</a>
+                                        <a href="mailto:ravi.kumar@email.com">ravi.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag security">Security</span>
+                                </td>
+                                <td>4 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                        <small>(4.5)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge working">Working</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W009')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W009')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W009')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W009')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="worker-checkbox" value="W010">
+                                </td>
+                                <td><strong>W010</strong></td>
+                                <td>
+                                    <div class="worker-info">
+                                        <img src="https://picsum.photos/seed/worker10/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="worker-details">
+                                            <h4>Sunil Kumar</h4>
+                                            <p>Delivery • Age: 27</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="worker-contact">
+                                        <a href="tel:+919876543219">+91 98765 43219</a>
+                                        <a href="mailto:sunil.kumar@email.com">sunil.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag delivery">Delivery</span>
+                                </td>
+                                <td>3 years</td>
+                                <td>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <small>(4.0)</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge available">Available</span>
+                                </td>
+                                <td>
+                                    <div class="worker-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewWorker('W010')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W010')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJob('W010')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W010')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="pagination-info">
+                        Showing 1-10 of 248 workers
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-outline" onclick="previousPage()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-sm active">1</button>
+                        <button class="btn btn-sm btn-outline" onclick="goToPage(2)">2</button>
+                        <button class="btn btn-sm btn-outline" onclick="goToPage(3)">3</button>
+                        <button class="btn btn-sm btn-outline" onclick="nextPage()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- Add/Edit Worker Modal -->
-    <div class="modal" id="workerModal">
-        <div class="modal-content glassmorphism">
-            <div class="modal-header">
-                <h3 id="modalTitle">Add New Worker</h3>
-                <button class="close-btn" onclick="closeWorkerModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <form class="worker-form" id="workerForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="workerName">Full Name *</label>
-                        <input type="text" id="workerName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="workerPhone">Phone Number *</label>
-                        <input type="tel" id="workerPhone" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="workerCategory">Job Category *</label>
-                        <select id="workerCategory" required>
-                            <option value="">Select Category</option>
-                            <option value="carpenter">Carpenter</option>
-                            <option value="mason">Mason</option>
-                            <option value="painter">Painter</option>
-                            <option value="electrician">Electrician</option>
-                            <option value="plumber">Plumber</option>
-                            <option value="driver">Driver</option>
-                            <option value="cleaner">House Cleaner</option>
-                            <option value="helper">Construction Helper</option>
-                            <option value="security">Security Guard</option>
-                            <option value="delivery">Delivery Worker</option>
-                            <option value="farm">Farm Worker</option>
-                            <option value="welder">Welder</option>
-                            <option value="mechanic">Mechanic</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="workerLocation">Location *</label>
-                        <select id="workerLocation" required>
-                            <option value="">Select Location</option>
-                            <option value="delhi">Delhi</option>
-                            <option value="mumbai">Mumbai</option>
-                            <option value="bangalore">Bangalore</option>
-                            <option value="chennai">Chennai</option>
-                            <option value="kolkata">Kolkata</option>
-                            <option value="hyderabad">Hyderabad</option>
-                            <option value="pune">Pune</option>
-                            <option value="jaipur">Jaipur</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="workerExperience">Experience (Years) *</label>
-                        <input type="number" id="workerExperience" min="0" max="50" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="workerAvailability">Availability Status *</label>
-                        <select id="workerAvailability" required>
-                            <option value="available">Available</option>
-                            <option value="busy">Busy</option>
-                            <option value="offline">Offline</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="workerRating">Rating (1-5)</label>
-                        <select id="workerRating">
-                            <option value="5">5 - Excellent</option>
-                            <option value="4">4 - Very Good</option>
-                            <option value="3">3 - Good</option>
-                            <option value="2">2 - Fair</option>
-                            <option value="1">1 - Poor</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="workerEmail">Email (Optional)</label>
-                        <input type="email" id="workerEmail">
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeWorkerModal()">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Save Worker
-                    </button>
-                </div>
-            </form>
-        </div>
     </div>
     
     <!-- Footer -->
     <footer class="crm-footer">
         <div class="footer-content">
-            <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
-            <p>Contact: contact@12th-failjobs.com</p>
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
             <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
                 <i class="fas fa-external-link-alt"></i> Official Website
             </a></p>
@@ -404,5 +1237,161 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="sidebar-toggle.js"></script>
+    <script>
+        // Simple navigation fix
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            // Add click event to each link
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Skip logout and empty links
+                    if (href === '#' || href.includes('logout')) {
+                        return;
+                    }
+                    
+                    // Navigate to the page
+                    window.location.href = href;
+                });
+            });
+            
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('a[href*="logout"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            });
+        });
+
+        // Workers management functions
+        function searchWorkers(searchTerm) {
+            console.log('Searching workers:', searchTerm);
+            // Implementation for search functionality
+        }
+
+        function exportWorkers() {
+            console.log('Exporting workers data');
+            // Implementation for export functionality
+        }
+
+        function addWorker() {
+            console.log('Adding new worker');
+            // Implementation for add worker modal
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const experience = document.getElementById('experienceFilter').value;
+            const rating = document.getElementById('ratingFilter').value;
+            
+            console.log('Applying filters:', { status, category, experience, rating });
+            // Implementation for filter functionality
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('experienceFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            
+            console.log('Filters cleared');
+            // Implementation for clear filters
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.worker-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        function bulkActivate() {
+            const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one worker to activate');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to activate ${selectedCheckboxes.length} workers?`)) {
+                console.log('Bulk activating workers');
+                // Implementation for bulk activate
+            }
+        }
+
+        function bulkSuspend() {
+            const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one worker to suspend');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to suspend ${selectedCheckboxes.length} workers?`)) {
+                console.log('Bulk suspending workers');
+                // Implementation for bulk suspend
+            }
+        }
+
+        function bulkDelete() {
+            const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one worker to delete');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${selectedCheckboxes.length} workers? This action cannot be undone.`)) {
+                console.log('Bulk deleting workers');
+                // Implementation for bulk delete
+            }
+        }
+
+        function viewWorker(workerId) {
+            console.log('Viewing worker:', workerId);
+            // Implementation for view worker modal
+        }
+
+        function editWorker(workerId) {
+            console.log('Editing worker:', workerId);
+            // Implementation for edit worker modal
+        }
+
+        function assignJob(workerId) {
+            console.log('Assigning job to worker:', workerId);
+            // Implementation for assign job modal
+        }
+
+        function deleteWorker(workerId) {
+            if (confirm(`Are you sure you want to delete worker ${workerId}? This action cannot be undone.`)) {
+                console.log('Deleting worker:', workerId);
+                // Implementation for delete worker
+            }
+        }
+
+        function previousPage() {
+            console.log('Going to previous page');
+            // Implementation for pagination
+        }
+
+        function nextPage() {
+            console.log('Going to next page');
+            // Implementation for pagination
+        }
+
+        function goToPage(page) {
+            console.log('Going to page:', page);
+            // Implementation for pagination
+        }
+    </script>
+    <script src="modal-system.js"></script>
 </body>
 </html>

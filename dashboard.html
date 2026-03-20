@@ -3,9 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12th FailJobs CRM - Dashboard</title>
+    <title>Admin Dashboard - 12th FailJobs CRM</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Dashboard Styles */
+        .dashboard-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #ab47bc, #7e57c2);
+            color: white;
+        }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .stat-info p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .stat-change.negative {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .stat-change.neutral {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 78, 146, 0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .chart-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .actions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .actions-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 78, 146, 0.3);
+        }
+
+        .action-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .action-card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+
+        .action-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .recent-activity {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .activity-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .activity-timeline {
+            display: grid;
+            gap: 20px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 4px solid #004e92;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 20px;
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .activity-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .top-performance {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .performance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .performance-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .performance-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid #004e92;
+            transition: all 0.3s ease;
+        }
+
+        .performance-card:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .performance-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .performance-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #004e92;
+        }
+
+        .performance-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .performance-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .performance-metrics {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #004e92;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-content {
+                padding: 20px;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .activity-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .activity-icon {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-content {
+                padding: 10px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .chart-card {
+                padding: 20px;
+            }
+
+            .quick-actions {
+                padding: 20px;
+            }
+
+            .recent-activity {
+                padding: 20px;
+            }
+
+            .top-performance {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body class="crm-page">
     <!-- Floating Particles -->
@@ -69,9 +535,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="settings.html">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
+                    <a href="admin-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
                     </a>
                 </li>
                 <li class="logout">
@@ -84,7 +550,7 @@
         </nav>
     </aside>
 
-    <!-- Main Dashboard Container -->
+    <!-- Main Content -->
     <div class="dashboard-container">
         <!-- Header -->
         <header class="dashboard-header glassmorphism">
@@ -92,45 +558,20 @@
                 <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>Dashboard</h1>
+                <h1>Admin Dashboard</h1>
             </div>
             <div class="header-right">
                 <div class="search-bar glassmorphism">
-                    <input type="text" placeholder="Search workers, jobs...">
+                    <input type="text" placeholder="Search dashboard..." onkeyup="searchDashboard(this.value)">
                     <i class="fas fa-search"></i>
                 </div>
-                <div class="notifications">
-                    <button class="notification-btn" onclick="toggleNotifications()">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
+                <div class="header-actions">
+                    <button class="btn btn-secondary glassmorphism" onclick="exportDashboard()">
+                        <i class="fas fa-download"></i> Export
                     </button>
-                    <div class="notification-dropdown glassmorphism" id="notificationDropdown">
-                        <div class="notification-item">
-                            <i class="fas fa-user-plus"></i>
-                            <div>
-                                <p>New worker registered</p>
-                                <small>2 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-briefcase"></i>
-                            <div>
-                                <p>New job request</p>
-                                <small>5 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-check-circle"></i>
-                            <div>
-                                <p>Job completed</p>
-                                <small>1 hour ago</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-profile glassmorphism">
-                    <img src="https://picsum.photos/seed/admin/40/40.jpg" alt="Admin">
-                    <span>Admin</span>
+                    <button class="btn btn-primary glassmorphism" onclick="refreshDashboard()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
                 </div>
             </div>
         </header>
@@ -138,138 +579,435 @@
         <!-- Dashboard Content -->
         <main class="dashboard-content">
             <!-- Statistics Cards -->
-            <div class="stats-grid">
-                <div class="stat-card glassmorphism">
+            <div class="stats-grid glassmorphism">
+                <div class="stat-card">
                     <div class="stat-icon blue">
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-info">
                         <h3>248</h3>
                         <p>Total Workers</p>
-                        <span class="stat-change positive">+12% this month</span>
+                        <span class="stat-change positive">+18 this month</span>
                     </div>
                 </div>
 
-                <div class="stat-card glassmorphism">
+                <div class="stat-card">
                     <div class="stat-icon green">
-                        <i class="fas fa-user-check"></i>
+                        <i class="fas fa-user-tie"></i>
                     </div>
                     <div class="stat-info">
-                        <h3>186</h3>
-                        <p>Active Workers</p>
-                        <span class="stat-change positive">+8% this month</span>
+                        <h3>48</h3>
+                        <p>Recruiters</p>
+                        <span class="stat-change positive">+8 this month</span>
                     </div>
                 </div>
 
-                <div class="stat-card glassmorphism">
+                <div class="stat-card">
                     <div class="stat-icon orange">
                         <i class="fas fa-briefcase"></i>
                     </div>
                     <div class="stat-info">
-                        <h3>142</h3>
-                        <p>Jobs Posted</p>
-                        <span class="stat-change positive">+15% this month</span>
+                        <h3>89</h3>
+                        <p>Active Jobs</p>
+                        <span class="stat-change positive">+24 this month</span>
                     </div>
                 </div>
 
-                <div class="stat-card glassmorphism">
+                <div class="stat-card">
                     <div class="stat-icon purple">
-                        <i class="fas fa-check-double"></i>
+                        <i class="fas fa-rupee-sign"></i>
                     </div>
                     <div class="stat-info">
-                        <h3>98</h3>
-                        <p>Jobs Completed</p>
-                        <span class="stat-change positive">+22% this month</span>
-                    </div>
-                </div>
-
-                <div class="stat-card glassmorphism">
-                    <div class="stat-icon red">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>44</h3>
-                        <p>Pending Requests</p>
-                        <span class="stat-change negative">+5% this month</span>
+                        <h3>₹2.4L</h3>
+                        <p>Total Revenue</p>
+                        <span class="stat-change positive">+₹0.8L this month</span>
                     </div>
                 </div>
             </div>
 
             <!-- Charts Section -->
-            <div class="charts-grid">
+            <div class="charts-section">
                 <div class="chart-card glassmorphism">
-                    <h3>Worker Registrations</h3>
-                    <canvas id="workerChart"></canvas>
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Revenue Overview</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
                 </div>
 
                 <div class="chart-card glassmorphism">
-                    <h3>Jobs Completed This Week</h3>
-                    <canvas id="jobChart"></canvas>
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-bar"></i> Job Statistics</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="jobChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions glassmorphism">
+                <div class="actions-header">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                </div>
+                <div class="actions-grid">
+                    <a href="workers.html" class="action-card">
+                        <i class="fas fa-user-plus"></i>
+                        <h4>Add Worker</h4>
+                        <p>Register new worker</p>
+                    </a>
+                    <a href="recruiters.html" class="action-card">
+                        <i class="fas fa-user-tie"></i>
+                        <h4>Add Recruiter</h4>
+                        <p>Onboard new recruiter</p>
+                    </a>
+                    <a href="jobs.html" class="action-card">
+                        <i class="fas fa-briefcase"></i>
+                        <h4>Create Job</h4>
+                        <p>Post new job opening</p>
+                    </a>
+                    <a href="requests.html" class="action-card">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h4>View Requests</h4>
+                        <p>Manage worker requests</p>
+                    </a>
+                    <a href="analytics.html" class="action-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Analytics</h4>
+                        <p>View detailed analytics</p>
+                    </a>
+                    <a href="admin-profile.html" class="action-card">
+                        <i class="fas fa-cog"></i>
+                        <h4>Settings</h4>
+                        <p>System configuration</p>
+                    </a>
                 </div>
             </div>
 
             <!-- Recent Activity -->
-            <div class="activity-section">
-                <div class="activity-card glassmorphism">
-                    <h3>Recent Activity</h3>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-icon worker">
-                                <i class="fas fa-user-plus"></i>
-                            </div>
-                            <div class="activity-details">
-                                <p>New worker <strong>Raj Kumar</strong> registered as Carpenter</p>
-                                <small>2 minutes ago</small>
+            <div class="recent-activity glassmorphism">
+                <div class="activity-header">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    <button class="btn btn-sm btn-outline" onclick="viewAllActivity()">
+                        View All
+                    </button>
+                </div>
+                <div class="activity-timeline">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>New Worker Registered</h4>
+                            <p>Raj Kumar (Carpenter) joined the platform</p>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>New Job Posted</h4>
+                            <p>Home Renovation project posted by Amit Sharma</p>
+                            <div class="activity-time">3 hours ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Request Approved</h4>
+                            <p>Training request approved for Suresh Kumar</p>
+                            <div class="activity-time">5 hours ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Payment Received</h4>
+                            <p>₹15,000 payment received for Office Wiring job</p>
+                            <div class="activity-time">1 day ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>New Recruiter Added</h4>
+                            <p>Priya Sharma joined as Senior Recruiter</p>
+                            <div class="activity-time">2 days ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Performance -->
+            <div class="top-performance glassmorphism">
+                <div class="performance-header">
+                    <h3><i class="fas fa-trophy"></i> Top Performers</h3>
+                    <button class="btn btn-sm btn-outline" onclick="viewAllPerformers()">
+                        View All
+                    </button>
+                </div>
+                <div class="performance-grid">
+                    <div class="performance-card">
+                        <div class="performance-info">
+                            <img src="https://picsum.photos/seed/worker1/50/50.jpg" alt="Worker" class="performance-avatar">
+                            <div class="performance-details">
+                                <h4>Raj Kumar</h4>
+                                <p>Carpenter • 4.5★</p>
                             </div>
                         </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon job">
-                                <i class="fas fa-briefcase"></i>
+                        <div class="performance-metrics">
+                            <div class="metric">
+                                <div class="metric-value">24</div>
+                                <div class="metric-label">Jobs</div>
                             </div>
-                            <div class="activity-details">
-                                <p>Job <strong>Home Renovation</strong> assigned to <strong>Amit Singh</strong></p>
-                                <small>15 minutes ago</small>
+                            <div class="metric">
+                                <div class="metric-value">₹1.2L</div>
+                                <div class="metric-label">Revenue</div>
                             </div>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon completed">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="activity-details">
-                                <p>Job <strong>Electrical Work</strong> marked as completed</p>
-                                <small>1 hour ago</small>
+                            <div class="metric">
+                                <div class="metric-value">98%</div>
+                                <div class="metric-label">Success</div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="activity-item">
-                            <div class="activity-icon request">
-                                <i class="fas fa-clipboard-list"></i>
+                    <div class="performance-card">
+                        <div class="performance-info">
+                            <img src="https://picsum.photos/seed/recruiter1/50/50.jpg" alt="Recruiter" class="performance-avatar">
+                            <div class="performance-details">
+                                <h4>Priya Sharma</h4>
+                                <p>Recruiter • 4.8★</p>
                             </div>
-                            <div class="activity-details">
-                                <p>New job request from <strong>Suresh Kumar</strong></p>
-                                <small>2 hours ago</small>
+                        </div>
+                        <div class="performance-metrics">
+                            <div class="metric">
+                                <div class="metric-value">156</div>
+                                <div class="metric-label">Jobs</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">₹3.2L</div>
+                                <div class="metric-label">Revenue</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">89%</div>
+                                <div class="metric-label">Success</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="performance-card">
+                        <div class="performance-info">
+                            <img src="https://picsum.photos/seed/worker2/50/50.jpg" alt="Worker" class="performance-avatar">
+                            <div class="performance-details">
+                                <h4>Amit Singh</h4>
+                                <p>Electrician • 5.0★</p>
+                            </div>
+                        </div>
+                        <div class="performance-metrics">
+                            <div class="metric">
+                                <div class="metric-value">18</div>
+                                <div class="metric-label">Jobs</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">₹0.9L</div>
+                                <div class="metric-label">Revenue</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">100%</div>
+                                <div class="metric-label">Success</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="performance-card">
+                        <div class="performance-info">
+                            <img src="https://picsum.photos/seed/worker3/50/50.jpg" alt="Worker" class="performance-avatar">
+                            <div class="performance-details">
+                                <h4>Suresh Kumar</h4>
+                                <p>Plumber • 4.0★</p>
+                            </div>
+                        </div>
+                        <div class="performance-metrics">
+                            <div class="metric">
+                                <div class="metric-value">22</div>
+                                <div class="metric-label">Jobs</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">₹1.0L</div>
+                                <div class="metric-label">Revenue</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">95%</div>
+                                <div class="metric-label">Success</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
-        
-        <!-- Footer -->
-        <footer class="dashboard-footer glassmorphism">
-            <div class="footer-content">
-                <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
-                <p>Contact: contact@12th-failjobs.com</p>
-                <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
-                    <i class="fas fa-external-link-alt"></i> Official Website
-                </a></p>
-            </div>
-        </footer>
     </div>
+    
+    <!-- Footer -->
+    <footer class="crm-footer">
+        <div class="footer-content">
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
+            <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                <i class="fas fa-external-link-alt"></i> Official Website
+            </a></p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="sidebar-toggle.js"></script>
+    <script>
+        // Simple navigation fix
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            // Add click event to each link
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Skip logout and empty links
+                    if (href === '#' || href.includes('logout')) {
+                        return;
+                    }
+                    
+                    // Navigate to the page
+                    window.location.href = href;
+                });
+            });
+            
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('a[href*="logout"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            });
+
+            // Initialize charts
+            initializeCharts();
+        });
+
+        // Dashboard functions
+        function searchDashboard(searchTerm) {
+            console.log('Searching dashboard:', searchTerm);
+            // Implementation for search functionality
+        }
+
+        function exportDashboard() {
+            console.log('Exporting dashboard data');
+            // Implementation for export functionality
+        }
+
+        function refreshDashboard() {
+            console.log('Refreshing dashboard');
+            location.reload();
+        }
+
+        function viewAllActivity() {
+            console.log('Viewing all activity');
+            window.location.href = 'analytics.html';
+        }
+
+        function viewAllPerformers() {
+            console.log('Viewing all performers');
+            window.location.href = 'analytics.html';
+        }
+
+        function initializeCharts() {
+            // Revenue Overview Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [1.2, 1.5, 1.8, 2.1, 2.4, 2.8],
+                        borderColor: '#004e92',
+                        backgroundColor: 'rgba(0, 78, 146, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value + 'L';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Job Statistics Chart
+            const jobCtx = document.getElementById('jobChart').getContext('2d');
+            new Chart(jobCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Construction', 'Electrical', 'Plumbing', 'Painting', 'Masonry', 'Others'],
+                    datasets: [{
+                        label: 'Jobs',
+                        data: [25, 18, 22, 15, 12, 8],
+                        backgroundColor: [
+                            '#004e92',
+                            '#4caf50',
+                            '#ff6b6b',
+                            '#ffa726',
+                            '#ab47bc',
+                            '#9c27b0'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    <script src="modal-system.js"></script>
 </body>
 </html>

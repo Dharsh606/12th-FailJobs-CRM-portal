@@ -3,9 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12th FailJobs CRM - Worker Requests</title>
+    <title>Worker Requests - 12th FailJobs CRM</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Requests Styles */
+        .requests-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #ab47bc, #7e57c2);
+            color: white;
+        }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .stat-info p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .stat-change.negative {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .stat-change.neutral {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .filters-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #004e92;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 78, 146, 0.1);
+        }
+
+        .requests-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .requests-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .requests-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: -20px;
+            padding: 20px;
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .requests-table th,
+        .requests-table td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .requests-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .requests-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .request-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .worker-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #004e92;
+        }
+
+        .request-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .request-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .request-actions .btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-controls .btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-controls .btn.active {
+            background: #004e92;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .requests-content {
+                padding: 20px;
+            }
+
+            .filters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .requests-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .requests-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .table-responsive {
+                margin: -15px;
+                padding: 15px;
+            }
+
+            .requests-table th,
+            .requests-table td {
+                padding: 15px 10px;
+            }
+
+            .request-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .request-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .requests-content {
+                padding: 10px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .filters-section {
+                padding: 20px;
+            }
+
+            .requests-section {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body class="crm-page">
     <!-- Floating Particles -->
@@ -69,9 +461,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="settings.html">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
+                    <a href="admin-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
                     </a>
                 </li>
                 <li class="logout">
@@ -84,7 +476,7 @@
         </nav>
     </aside>
 
-    <!-- Main Dashboard Container -->
+    <!-- Main Content -->
     <div class="dashboard-container">
         <!-- Header -->
         <header class="dashboard-header glassmorphism">
@@ -96,229 +488,552 @@
             </div>
             <div class="header-right">
                 <div class="search-bar glassmorphism">
-                    <input type="text" id="requestSearch" placeholder="Search requests by worker name or job type...">
+                    <input type="text" placeholder="Search requests..." onkeyup="searchRequests(this.value)">
                     <i class="fas fa-search"></i>
                 </div>
-                <div class="notifications">
-                    <button class="notification-btn" onclick="toggleNotifications()">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
+                <div class="header-actions">
+                    <button class="btn btn-secondary glassmorphism" onclick="exportRequests()">
+                        <i class="fas fa-download"></i> Export
                     </button>
-                    <div class="notification-dropdown glassmorphism" id="notificationDropdown">
-                        <div class="notification-item">
-                            <i class="fas fa-user-plus"></i>
-                            <div>
-                                <p>New worker registered</p>
-                                <small>2 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-briefcase"></i>
-                            <div>
-                                <p>New job request</p>
-                                <small>5 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-check-circle"></i>
-                            <div>
-                                <p>Job completed</p>
-                                <small>1 hour ago</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-profile glassmorphism">
-                    <img src="https://picsum.photos/seed/admin/40/40.jpg" alt="Admin">
-                    <span>Admin</span>
+                    <button class="btn btn-primary glassmorphism" onclick="addRequest()">
+                        <i class="fas fa-plus"></i> Add Request
+                    </button>
                 </div>
             </div>
         </header>
 
         <!-- Requests Content -->
         <main class="requests-content">
-            <div class="content-header glassmorphism">
-                <h1>Worker Requests</h1>
-                <div class="actions">
-                    <div class="search-bar glassmorphism">
-                        <input type="text" id="requestSearch" placeholder="Search requests..." onkeyup="filterRequests(this.value)">
-                        <i class="fas fa-search"></i>
+            <!-- Statistics Cards -->
+            <div class="stats-grid glassmorphism">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-clipboard-list"></i>
                     </div>
-                    <select class="filter-select glassmorphism" id="statusFilter" onchange="filterRequestsByStatus()">
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                    <button class="btn btn-primary glassmorphism" onclick="refreshRequests()">
-                        <i class="fas fa-sync"></i>
-                        Refresh
-                    </button>
+                    <div class="stat-info">
+                        <h3>234</h3>
+                        <p>Total Requests</p>
+                        <span class="stat-change positive">+25 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>125</h3>
+                        <p>Approved</p>
+                        <span class="stat-change positive">+15 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>89</h3>
+                        <p>Pending</p>
+                        <span class="stat-change neutral">+10 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>20</h3>
+                        <p>Rejected</p>
+                        <span class="stat-change negative">+5 this month</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Requests List -->
-                <div class="requests-list" id="requestsList">
-                    <div class="request-card glassmorphism">
-                        <div class="request-info">
-                            <h4>Kitchen Cabinet Installation</h4>
-                            <div class="request-details">
-                                <div class="request-detail">
-                                    <i class="fas fa-user"></i>
-                                    <span>Vikram Singh</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-briefcase"></i>
-                                    <span>Carpentry</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>Delhi, NCR</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-rupee-sign"></i>
-                                    <span>₹3,000</span>
-                                </div>
-                            </div>
-                            <div class="request-meta">
-                                Submitted on 15 Mar 2026 • 
-                                Status: <span class="status-badge pending">Pending</span>
-                            </div>
-                        </div>
-                        <div class="request-actions">
-                            <button class="btn btn-sm btn-primary" onclick="viewRequest('REQ001')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="btn btn-sm btn-success" onclick="approveRequest('REQ001')">
-                                <i class="fas fa-check"></i> Approve
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="rejectRequest('REQ001')">
-                                <i class="fas fa-times"></i> Reject
-                            </button>
-                        </div>
+            <!-- Filters Section -->
+            <div class="filters-section glassmorphism">
+                <div class="filters-header">
+                    <h3><i class="fas fa-filter"></i> Filter Requests</h3>
+                    <button class="btn btn-sm btn-outline" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </button>
+                </div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="statusFilter">Status</label>
+                        <select id="statusFilter" onchange="applyFilters()">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="completed">Completed</option>
+                        </select>
                     </div>
-                    
-                    <div class="request-card glassmorphism">
-                        <div class="request-info">
-                            <h4>Bathroom Plumbing Work</h4>
-                            <div class="request-details">
-                                <div class="request-detail">
-                                    <i class="fas fa-user"></i>
-                                    <span>Priya Sharma</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-briefcase"></i>
-                                    <span>Plumbing</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>Mumbai, Maharashtra</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-rupee-sign"></i>
-                                    <span>₹2,500</span>
-                                </div>
-                            </div>
-                            <div class="request-meta">
-                                Submitted on 14 Mar 2026 • 
-                                Status: <span class="status-badge approved">Approved</span>
-                            </div>
-                        </div>
-                        <div class="request-actions">
-                            <button class="btn btn-sm btn-primary" onclick="viewRequest('REQ002')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                        </div>
+                    <div class="filter-group">
+                        <label for="typeFilter">Request Type</label>
+                        <select id="typeFilter" onchange="applyFilters()">
+                            <option value="">All Types</option>
+                            <option value="job">Job Application</option>
+                            <option value="training">Training</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="leave">Leave</option>
+                            <option value="salary">Salary Advance</option>
+                        </select>
                     </div>
-                    
-                    <div class="request-card glassmorphism">
-                        <div class="request-info">
-                            <h4>House Painting</h4>
-                            <div class="request-details">
-                                <div class="request-detail">
-                                    <i class="fas fa-user"></i>
-                                    <span>Amit Kumar</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-briefcase"></i>
-                                    <span>Painting</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>Pune, Maharashtra</span>
-                                </div>
-                                <div class="request-detail">
-                                    <i class="fas fa-rupee-sign"></i>
-                                    <span>₹8,000</span>
-                                </div>
-                            </div>
-                            <div class="request-meta">
-                                Submitted on 13 Mar 2026 • 
-                                Status: <span class="status-badge rejected">Rejected</span>
-                            </div>
-                        </div>
-                        <div class="request-actions">
-                            <button class="btn btn-sm btn-primary" onclick="viewRequest('REQ003')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                        </div>
+                    <div class="filter-group">
+                        <label for="priorityFilter">Priority</label>
+                        <select id="priorityFilter" onchange="applyFilters()">
+                            <option value="">All Priorities</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
                     </div>
+                    <div class="filter-group">
+                        <label for="dateFilter">Date Range</label>
+                        <input type="date" id="dateFilter" onchange="applyFilters()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Requests Table -->
+            <div class="requests-section glassmorphism">
+                <div class="requests-header">
+                    <h3><i class="fas fa-list"></i> All Requests</h3>
+                    <div class="header-actions">
+                        <button class="btn btn-sm btn-success" onclick="bulkApprove()">
+                            <i class="fas fa-check"></i> Bulk Approve
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="bulkReject()">
+                            <i class="fas fa-times"></i> Bulk Reject
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Request ID</th>
+                                <th>Worker</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ001">
+                                </td>
+                                <td><strong>REQ001</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker1/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Raj Kumar</h4>
+                                            <p>Carpenter • ID: W001</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag carpentry">Job Application</span>
+                                </td>
+                                <td>Applied for Home Renovation Project</td>
+                                <td>
+                                    <span class="priority-badge high">High</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge pending">Pending</span>
+                                </td>
+                                <td>2024-03-20</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-success" onclick="approveRequest('REQ001')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="rejectRequest('REQ001')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ001')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ002">
+                                </td>
+                                <td><strong>REQ002</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker2/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Amit Singh</h4>
+                                            <p>Electrician • ID: W002</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag electrical">Equipment</span>
+                                </td>
+                                <td>Request for new electrical tools</td>
+                                <td>
+                                    <span class="priority-badge medium">Medium</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge approved">Approved</span>
+                                </td>
+                                <td>2024-03-19</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ002')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRequest('REQ002')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ003">
+                                </td>
+                                <td><strong>REQ003</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker3/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Suresh Kumar</h4>
+                                            <p>Plumber • ID: W003</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag plumbing">Training</span>
+                                </td>
+                                <td>Request for advanced plumbing training</td>
+                                <td>
+                                    <span class="priority-badge low">Low</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge pending">Pending</span>
+                                </td>
+                                <td>2024-03-18</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-success" onclick="approveRequest('REQ003')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="rejectRequest('REQ003')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ003')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ004">
+                                </td>
+                                <td><strong>REQ004</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker4/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Mahesh Kumar</h4>
+                                            <p>Painter • ID: W004</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag painting">Leave</span>
+                                </td>
+                                <td>Request for 5 days leave</td>
+                                <td>
+                                    <span class="priority-badge medium">Medium</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge approved">Approved</span>
+                                </td>
+                                <td>2024-03-17</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ004')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRequest('REQ004')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ005">
+                                </td>
+                                <td><strong>REQ005</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker5/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Ramesh Kumar</h4>
+                                            <p>Mason • ID: W005</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag masonry">Salary Advance</span>
+                                </td>
+                                <td>Request for ₹5,000 salary advance</td>
+                                <td>
+                                    <span class="priority-badge high">High</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge rejected">Rejected</span>
+                                </td>
+                                <td>2024-03-16</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ005')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="reconsiderRequest('REQ005')">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ006">
+                                </td>
+                                <td><strong>REQ006</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker6/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Vijay Kumar</h4>
+                                            <p>Welder • ID: W006</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag welding">Job Application</span>
+                                </td>
+                                <td>Applied for Industrial Welding Project</td>
+                                <td>
+                                    <span class="priority-badge high">High</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge pending">Pending</span>
+                                </td>
+                                <td>2024-03-15</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-success" onclick="approveRequest('REQ006')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="rejectRequest('REQ006')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ006')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ007">
+                                </td>
+                                <td><strong>REQ007</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker7/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Anil Kumar</h4>
+                                            <p>Mechanic • ID: W007</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag mechanical">Equipment</span>
+                                </td>
+                                <td>Request for new diagnostic tools</td>
+                                <td>
+                                    <span class="priority-badge medium">Medium</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge approved">Approved</span>
+                                </td>
+                                <td>2024-03-14</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ007')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRequest('REQ007')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ008">
+                                </td>
+                                <td><strong>REQ008</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker8/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Rahul Kumar</h4>
+                                            <p>Cleaner • ID: W008</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag cleaning">Training</span>
+                                </td>
+                                <td>Request for safety training certification</td>
+                                <td>
+                                    <span class="priority-badge low">Low</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge pending">Pending</span>
+                                </td>
+                                <td>2024-03-13</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-success" onclick="approveRequest('REQ008')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="rejectRequest('REQ008')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ008')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ009">
+                                </td>
+                                <td><strong>REQ009</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker9/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Ravi Kumar</h4>
+                                            <p>Security • ID: W009</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag security">Salary Advance</span>
+                                </td>
+                                <td>Request for ₹3,000 salary advance</td>
+                                <td>
+                                    <span class="priority-badge medium">Medium</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge approved">Approved</span>
+                                </td>
+                                <td>2024-03-12</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ009')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRequest('REQ009')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="request-checkbox" value="REQ010">
+                                </td>
+                                <td><strong>REQ010</strong></td>
+                                <td>
+                                    <div class="request-info">
+                                        <img src="https://picsum.photos/seed/worker10/50/50.jpg" alt="Worker" class="worker-avatar">
+                                        <div class="request-details">
+                                            <h4>Sunil Kumar</h4>
+                                            <p>Delivery • ID: W010</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-tag delivery">Job Application</span>
+                                </td>
+                                <td>Applied for Logistics Delivery Project</td>
+                                <td>
+                                    <span class="priority-badge high">High</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge pending">Pending</span>
+                                </td>
+                                <td>2024-03-11</td>
+                                <td>
+                                    <div class="request-actions">
+                                        <button class="btn btn-sm btn-success" onclick="approveRequest('REQ010')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="rejectRequest('REQ010')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline" onclick="viewRequest('REQ010')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Pagination -->
-                <div class="pagination glassmorphism">
-                    <button class="pagination-btn" onclick="previousPage()">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <span class="page-info">Page 1 of 3</span>
-                    <button class="pagination-btn" onclick="nextPage()">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+                <div class="pagination">
+                    <div class="pagination-info">
+                        Showing 1-10 of 234 requests
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-outline" onclick="previousPage()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-sm active">1</button>
+                        <button class="btn btn-sm btn-outline" onclick="goToPage(2)">2</button>
+                        <button class="btn btn-sm btn-outline" onclick="goToPage(3)">3</button>
+                        <button class="btn btn-sm btn-outline" onclick="nextPage()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
-
-        <!-- Request Details Modal -->
-        <div class="modal" id="requestModal">
-            <div class="modal-content glassmorphism">
-                <div class="modal-header">
-                    <h3>Request Details</h3>
-                    <button class="close-btn" onclick="closeRequestModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-
-                <div class="request-details" id="requestDetails">
-                    <!-- Request details will be dynamically added here -->
-                </div>
-
-                <div class="modal-actions">
-                    <button class="btn btn-success" onclick="approveRequest()">
-                        <i class="fas fa-check"></i>
-                        Approve
-                    </button>
-                    <button class="btn btn-danger" onclick="rejectRequest()">
-                        <i class="fas fa-times"></i>
-                        Reject
-                    </button>
-                    <button class="btn btn-secondary" onclick="closeRequestModal()">
-                        Close
-                    </button>
-                </div>
-                    Reject
-                </button>
-                <button class="btn btn-secondary" onclick="closeRequestModal()">
-                    Close
-                </button>
-            </div>
-        </div>
     </div>
     
     <!-- Footer -->
     <footer class="crm-footer">
         <div class="footer-content">
-            <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
-            <p>Contact: contact@12th-failjobs.com</p>
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
             <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
                 <i class="fas fa-external-link-alt"></i> Official Website
             </a></p>
@@ -326,5 +1041,223 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="sidebar-toggle.js"></script>
+    <script>
+        // Simple navigation fix
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            // Add click event to each link
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Skip logout and empty links
+                    if (href === '#' || href.includes('logout')) {
+                        return;
+                    }
+                    
+                    // Navigate to the page
+                    window.location.href = href;
+                });
+            });
+            
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('a[href*="logout"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            });
+        });
+
+        // Requests management functions
+        function searchRequests(searchTerm) {
+            console.log('Searching requests:', searchTerm);
+            // Implementation for search functionality
+        }
+
+        function exportRequests() {
+            console.log('Exporting requests data');
+            // Implementation for export functionality
+        }
+
+        function addRequest() {
+            console.log('Adding new request');
+            // Implementation for add request modal
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            const date = document.getElementById('dateFilter').value;
+            
+            console.log('Applying filters:', { status, type, priority, date });
+            // Implementation for filter functionality
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            
+            console.log('Filters cleared');
+            // Implementation for clear filters
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.request-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        function bulkApprove() {
+            const selectedCheckboxes = document.querySelectorAll('.request-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one request to approve');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to approve ${selectedCheckboxes.length} requests?`)) {
+                console.log('Bulk approving requests');
+                // Implementation for bulk approve
+            }
+        }
+
+        function bulkReject() {
+            const selectedCheckboxes = document.querySelectorAll('.request-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one request to reject');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to reject ${selectedCheckboxes.length} requests?`)) {
+                console.log('Bulk rejecting requests');
+                // Implementation for bulk reject
+            }
+        }
+
+        function approveRequest(requestId) {
+            if (confirm(`Are you sure you want to approve request ${requestId}?`)) {
+                console.log('Approving request:', requestId);
+                // Implementation for approve request
+            }
+        }
+
+        function rejectRequest(requestId) {
+            if (confirm(`Are you sure you want to reject request ${requestId}?`)) {
+                console.log('Rejecting request:', requestId);
+                // Implementation for reject request
+            }
+        }
+
+        function viewRequest(requestId) {
+            console.log('Viewing request:', requestId);
+            // Implementation for view request modal
+        }
+
+        function editRequest(requestId) {
+            console.log('Editing request:', requestId);
+            // Implementation for edit request modal
+        }
+
+        function reconsiderRequest(requestId) {
+            if (confirm(`Are you sure you want to reconsider request ${requestId}?`)) {
+                console.log('Reconsidering request:', requestId);
+                // Implementation for reconsider request
+            }
+        }
+
+        function previousPage() {
+            console.log('Going to previous page');
+            // Implementation for pagination
+        }
+
+        function nextPage() {
+            console.log('Going to next page');
+            // Implementation for pagination
+        }
+
+        function goToPage(page) {
+            console.log('Going to page:', page);
+            // Implementation for pagination
+        }
+    </script>
+    <script>
+    // Enhanced sidebar toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Enhanced sidebar toggle loaded');
+        
+        const sidebar = document.getElementById('sidebar');
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        
+        // Initialize sidebar state
+        if (window.innerWidth > 768) {
+            if (sidebar) {
+                sidebar.classList.remove('collapsed');
+            }
+            if (dashboardContainer) {
+                dashboardContainer.classList.remove('expanded');
+            }
+        } else {
+            if (sidebar) {
+                sidebar.classList.add('collapsed');
+            }
+            if (dashboardContainer) {
+                dashboardContainer.classList.add('expanded');
+            }
+        }
+        
+        // Setup event listener for sidebar toggle button
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Toggle button clicked');
+                
+                if (sidebar) {
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    
+                    if (isCollapsed) {
+                        // Open sidebar
+                        sidebar.classList.remove('collapsed');
+                        if (dashboardContainer) {
+                            dashboardContainer.classList.remove('expanded');
+                        }
+                        const toggleIcon = sidebarToggle.querySelector('i');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-times');
+                            toggleIcon.classList.add('fa-bars');
+                        }
+                        console.log('Sidebar opened');
+                    } else {
+                        // Close sidebar
+                        sidebar.classList.add('collapsed');
+                        if (dashboardContainer) {
+                            dashboardContainer.classList.add('expanded');
+                        }
+                        const toggleIcon = sidebarToggle.querySelector('i');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-bars');
+                            toggleIcon.classList.add('fa-times');
+                        }
+                        console.log('Sidebar closed');
+                    }
+                }
+            });
+        }
+    });
+</script>
+    <script src="modal-system.js"></script>
 </body>
 </html>

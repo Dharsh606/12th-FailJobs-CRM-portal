@@ -319,68 +319,77 @@ function toggleSidebar() {
     console.log('Sidebar element:', sidebar);
     
     if (sidebar) {
-        const isOpen = sidebar.classList.contains('open');
-        console.log('Current state - isOpen:', isOpen);
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        console.log('Current state - isCollapsed:', isCollapsed);
         
-        if (isOpen) {
-            sidebar.classList.remove('open');
+        if (isCollapsed) {
+            // Open sidebar
+            sidebar.classList.remove('collapsed');
             if (dashboardContainer) {
-                dashboardContainer.classList.remove('sidebar-open');
+                dashboardContainer.classList.remove('expanded');
             }
             if (toggleIcon) {
                 toggleIcon.classList.remove('fa-times');
                 toggleIcon.classList.add('fa-bars');
             }
-            console.log('Sidebar closed');
+            console.log('Sidebar opened');
         } else {
-            sidebar.classList.add('open');
+            // Close sidebar
+            sidebar.classList.add('collapsed');
             if (dashboardContainer) {
-                dashboardContainer.classList.add('sidebar-open');
+                dashboardContainer.classList.add('expanded');
             }
             if (toggleIcon) {
                 toggleIcon.classList.remove('fa-bars');
                 toggleIcon.classList.add('fa-times');
             }
-            console.log('Sidebar opened');
+            console.log('Sidebar closed');
         }
     } else {
         console.error('Sidebar not found!');
     }
 }
 
-// Ensure sidebar is closed on page load
+// Ensure sidebar is properly initialized on page load
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const dashboardContainer = document.querySelector('.dashboard-container');
     
-    if (sidebar) {
-        sidebar.classList.remove('open');
-    }
-    if (dashboardContainer) {
-        dashboardContainer.classList.remove('sidebar-open');
+    // On desktop, start with sidebar open; on mobile, start collapsed
+    if (window.innerWidth > 768) {
+        if (sidebar) {
+            sidebar.classList.remove('collapsed');
+        }
+        if (dashboardContainer) {
+            dashboardContainer.classList.remove('expanded');
+        }
+    } else {
+        if (sidebar) {
+            sidebar.classList.add('collapsed');
+        }
+        if (dashboardContainer) {
+            dashboardContainer.classList.add('expanded');
+        }
     }
     
-    // Setup sidebar toggle button
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleSidebar();
-        });
-        
-        // Add keyboard support
-        sidebarToggle.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleSidebar();
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            if (sidebar) {
+                sidebar.classList.remove('collapsed');
             }
-        });
-        
-        console.log('Sidebar toggle button setup complete');
-    } else {
-        console.error('Sidebar toggle button not found!');
-    }
+            if (dashboardContainer) {
+                dashboardContainer.classList.remove('expanded');
+            }
+        } else {
+            if (sidebar) {
+                sidebar.classList.add('collapsed');
+            }
+            if (dashboardContainer) {
+                dashboardContainer.classList.add('expanded');
+            }
+        }
+    });
 });
 
 function toggleNotifications() {

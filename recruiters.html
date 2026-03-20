@@ -3,9 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12th FailJobs CRM - Recruiters</title>
+    <title>Recruiters Management - 12th FailJobs CRM</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Recruiters Styles */
+        .recruiters-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #004e92, #007bff);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #ab47bc, #7e57c2);
+            color: white;
+        }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .stat-info p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .stat-change.negative {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .stat-change.neutral {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .filters-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #004e92;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 78, 146, 0.1);
+        }
+
+        .recruiters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .recruiters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .recruiters-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: -20px;
+            padding: 20px;
+        }
+
+        .recruiters-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .recruiters-table th,
+        .recruiters-table td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .recruiters-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .recruiters-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .recruiter-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .recruiter-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #004e92;
+        }
+
+        .recruiter-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .recruiter-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .recruiter-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .recruiter-contact a {
+            color: #004e92;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .recruiter-contact a:hover {
+            text-decoration: underline;
+        }
+
+        .recruiter-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .recruiter-actions .btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .performance-metrics {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            min-width: 60px;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-controls .btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-controls .btn.active {
+            background: #004e92;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .recruiters-content {
+                padding: 20px;
+            }
+
+            .filters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .recruiters-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recruiters-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .table-responsive {
+                margin: -15px;
+                padding: 15px;
+            }
+
+            .recruiters-table th,
+            .recruiters-table td {
+                padding: 15px 10px;
+            }
+
+            .recruiter-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .recruiter-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .performance-metrics {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .recruiters-content {
+                padding: 10px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .filters-section {
+                padding: 20px;
+            }
+
+            .recruiters-section {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body class="crm-page">
     <!-- Floating Particles -->
@@ -69,9 +510,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="settings.html">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
+                    <a href="admin-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
                     </a>
                 </li>
                 <li class="logout">
@@ -84,7 +525,7 @@
         </nav>
     </aside>
 
-    <!-- Main Dashboard Container -->
+    <!-- Main Content -->
     <div class="dashboard-container">
         <!-- Header -->
         <header class="dashboard-header glassmorphism">
@@ -92,191 +533,771 @@
                 <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>Recruiters</h1>
+                <h1>Recruiters Management</h1>
             </div>
             <div class="header-right">
                 <div class="search-bar glassmorphism">
-                    <input type="text" placeholder="Search recruiters...">
+                    <input type="text" placeholder="Search recruiters..." onkeyup="searchRecruiters(this.value)">
                     <i class="fas fa-search"></i>
                 </div>
-                <div class="notifications">
-                    <button class="notification-btn" onclick="toggleNotifications()">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
+                <div class="header-actions">
+                    <button class="btn btn-secondary glassmorphism" onclick="exportRecruiters()">
+                        <i class="fas fa-download"></i> Export
                     </button>
-                    <div class="notification-dropdown glassmorphism" id="notificationDropdown">
-                        <div class="notification-item">
-                            <i class="fas fa-user-plus"></i>
-                            <div>
-                                <p>New worker registered</p>
-                                <small>2 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-briefcase"></i>
-                            <div>
-                                <p>New job request</p>
-                                <small>5 minutes ago</small>
-                            </div>
-                        </div>
-                        <div class="notification-item">
-                            <i class="fas fa-check-circle"></i>
-                            <div>
-                                <p>Job completed</p>
-                                <small>1 hour ago</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-profile glassmorphism">
-                    <img src="https://picsum.photos/seed/admin/40/40.jpg" alt="Admin">
-                    <span>Admin</span>
-                            <option value="suspended">Suspended</option>
-                        </select>
-
-                        <select id="locationFilter" class="filter-select">
-                            <option value="">All Locations</option>
-                            <option value="delhi">Delhi</option>
-                            <option value="mumbai">Mumbai</option>
-                            <option value="bangalore">Bangalore</option>
-                            <option value="chennai">Chennai</option>
-                            <option value="kolkata">Kolkata</option>
-                            <option value="hyderabad">Hyderabad</option>
+                    <button class="btn btn-primary glassmorphism" onclick="addRecruiter()">
+                        <i class="fas fa-plus"></i> Add Recruiter
+                    </button>
                 </div>
             </div>
         </header>
 
         <!-- Recruiters Content -->
         <main class="recruiters-content">
-            <div class="content-header glassmorphism">
-                <h1>Recruiters Management</h1>
-                <div class="actions">
-                    <div class="search-bar glassmorphism">
-                        <input type="text" id="recruiterSearch" placeholder="Search recruiters..." onkeyup="filterRecruiters(this.value)">
-                        <i class="fas fa-search"></i>
+            <!-- Statistics Cards -->
+            <div class="stats-grid glassmorphism">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-user-tie"></i>
                     </div>
-                    <select class="filter-select glassmorphism" id="statusFilter" onchange="filterRecruitersByStatus()">
-                        <option value="">All Status</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="pending">Pending</option>
-                    </select>
-                    <button class="btn btn-primary glassmorphism" onclick="openAddRecruiterModal()">
-                        <i class="fas fa-plus"></i>
-                        Add Recruiter
-                                <th>Location</th>
-                                <th>Active Jobs</th>
+                    <div class="stat-info">
+                        <h3>48</h3>
+                        <p>Total Recruiters</p>
+                        <span class="stat-change positive">+8 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>36</h3>
+                        <p>Active</p>
+                        <span class="stat-change positive">+6 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>892</h3>
+                        <p>Jobs Posted</p>
+                        <span class="stat-change positive">+124 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>4.3</h3>
+                        <p>Avg Rating</p>
+                        <span class="stat-change positive">+0.3 this month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section glassmorphism">
+                <div class="filters-header">
+                    <h3><i class="fas fa-filter"></i> Filter Recruiters</h3>
+                    <button class="btn btn-sm btn-outline" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </button>
+                </div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="statusFilter">Status</label>
+                        <select id="statusFilter" onchange="applyFilters()">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="performanceFilter">Performance</label>
+                        <select id="performanceFilter" onchange="applyFilters()">
+                            <option value="">All Performance</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="average">Average</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="experienceFilter">Experience</label>
+                        <select id="experienceFilter" onchange="applyFilters()">
+                            <option value="">All Experience</option>
+                            <option value="0-1">0-1 years</option>
+                            <option value="1-3">1-3 years</option>
+                            <option value="3-5">3-5 years</option>
+                            <option value="5+">5+ years</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="regionFilter">Region</label>
+                        <select id="regionFilter" onchange="applyFilters()">
+                            <option value="">All Regions</option>
+                            <option value="north">North</option>
+                            <option value="south">South</option>
+                            <option value="east">East</option>
+                            <option value="west">West</option>
+                            <option value="central">Central</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recruiters Table -->
+            <div class="recruiters-section glassmorphism">
+                <div class="recruiters-header">
+                    <h3><i class="fas fa-list"></i> All Recruiters</h3>
+                    <div class="header-actions">
+                        <button class="btn btn-sm btn-success" onclick="bulkActivate()">
+                            <i class="fas fa-check"></i> Bulk Activate
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="bulkSuspend()">
+                            <i class="fas fa-pause"></i> Bulk Suspend
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="bulkDelete()">
+                            <i class="fas fa-trash"></i> Bulk Delete
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="recruiters-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Recruiter ID</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Company</th>
+                                <th>Experience</th>
+                                <th>Performance</th>
                                 <th>Status</th>
-                                <th>Joined</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="recruitersTableBody">
-                            <!-- Recruiter rows will be dynamically added here -->
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R001">
+                                </td>
+                                <td><strong>R001</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter1/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Priya Sharma</h4>
+                                            <p>Senior Recruiter • Age: 32</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543210">+91 98765 43210</a>
+                                        <a href="mailto:priya.sharma@email.com">priya.sharma@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Staffing Solutions Pvt Ltd</td>
+                                <td>5 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.8</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">89%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">156</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge active">Active</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R001')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R001')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R001')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R001')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R002">
+                                </td>
+                                <td><strong>R002</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter2/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Amit Patel</h4>
+                                            <p>Recruiter • Age: 28</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543211">+91 98765 43211</a>
+                                        <a href="mailto:amit.patel@email.com">amit.patel@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Talent Connect Ltd</td>
+                                <td>3 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.5</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">82%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">124</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge active">Active</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R002')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R002')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R002')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R002')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R003">
+                                </td>
+                                <td><strong>R003</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter3/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Neha Gupta</h4>
+                                            <p>Talent Acquisition • Age: 30</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543212">+91 98765 43212</a>
+                                        <a href="mailto:neha.gupta@email.com">neha.gupta@email.com</a>
+                                    </div>
+                                </td>
+                                <td>HR Partners Ltd</td>
+                                <td>4 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.7</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">91%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">178</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge active">Active</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R003')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R003')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R003')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R003')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R004">
+                                </td>
+                                <td><strong>R004</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter4/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Rahul Verma</h4>
+                                            <p>Recruitment Manager • Age: 35</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543213">+91 98765 43213</a>
+                                        <a href="mailto:rahul.verma@email.com">rahul.verma@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Global Talent Agency</td>
+                                <td>7 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.9</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">94%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">203</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge active">Active</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R004')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R004')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R004')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R004')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R005">
+                                </td>
+                                <td><strong>R005</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter5/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Swati Reddy</h4>
+                                            <p>Junior Recruiter • Age: 26</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543214">+91 98765 43214</a>
+                                        <a href="mailto:swati.reddy@email.com">swati.reddy@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Quick Hire Services</td>
+                                <td>2 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.2</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">78%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">89</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge active">Active</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R005')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R005')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R005')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R005')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R006">
+                                </td>
+                                <td><strong>R006</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter6/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Arjun Singh</h4>
+                                            <p>Recruitment Specialist • Age: 29</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543215">+91 98765 43215</a>
+                                        <a href="mailto:arjun.singh@email.com">arjun.singh@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Tech Talent Solutions</td>
+                                <td>4 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.6</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">85%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">142</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge inactive">Inactive</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R006')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R006')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R006')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R006')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R007">
+                                </td>
+                                <td><strong>R007</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter7/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Kavita Nair</h4>
+                                            <p>Senior Recruiter • Age: 33</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543216">+91 98765 43216</a>
+                                        <a href="mailto:kavita.nair@email.com">kavita.nair@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Executive Search Ltd</td>
+                                <td>6 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.8</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">88%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">167</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge active">Active</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R007')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R007')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R007')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R007')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R008">
+                                </td>
+                                <td><strong>R008</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter8/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Vikram Mehta</h4>
+                                            <p>Recruitment Lead • Age: 36</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543217">+91 98765 43217</a>
+                                        <a href="mailto:vikram.mehta@email.com">vikram.mehta@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Professional Staffing</td>
+                                <td>8 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.7</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">92%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">189</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge active">Active</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R008')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R008')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R008')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R008')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R009">
+                                </td>
+                                <td><strong>R009</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter9/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Anjali Desai</h4>
+                                            <p>Recruitment Consultant • Age: 27</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543218">+91 98765 43218</a>
+                                        <a href="mailto:anjali.desai@email.com">anjali.desai@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Future Talent Agency</td>
+                                <td>1 year</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.1</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">75%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">67</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge pending">Pending</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R009')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R009')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R009')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R009')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="recruiter-checkbox" value="R010">
+                                </td>
+                                <td><strong>R010</strong></td>
+                                <td>
+                                    <div class="recruiter-info">
+                                        <img src="https://picsum.photos/seed/recruiter10/50/50.jpg" alt="Recruiter" class="recruiter-avatar">
+                                        <div class="recruiter-details">
+                                            <h4>Manoj Kumar</h4>
+                                            <p>Recruitment Manager • Age: 31</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recruiter-contact">
+                                        <a href="tel:+919876543219">+91 98765 43219</a>
+                                        <a href="mailto:manoj.kumar@email.com">manoj.kumar@email.com</a>
+                                    </div>
+                                </td>
+                                <td>Smart Hiring Ltd</td>
+                                <td>3 years</td>
+                                <td>
+                                    <div class="performance-metrics">
+                                        <div class="metric">
+                                            <div class="metric-value">4.4</div>
+                                            <div class="metric-label">Rating</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">80%</div>
+                                            <div class="metric-label">Success</div>
+                                        </div>
+                                        <div class="metric">
+                                            <div class="metric-value">112</div>
+                                            <div class="metric-label">Jobs</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge suspended">Suspended</span>
+                                </td>
+                                <td>
+                                    <div class="recruiter-actions">
+                                        <button class="btn btn-sm btn-primary" onclick="viewRecruiter('R010')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editRecruiter('R010')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="assignJobs('R010')">
+                                            <i class="fas fa-briefcase"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteRecruiter('R010')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Pagination -->
                 <div class="pagination">
-                    <button class="pagination-btn" onclick="previousPage()">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <span class="page-info">Page 1 of 3</span>
-                    <button class="pagination-btn" onclick="nextPage()">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+                    <div class="pagination-info">
+                        Showing 1-10 of 48 recruiters
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-outline" onclick="previousPage()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-sm active">1</button>
+                        <button class="btn btn-sm btn-outline" onclick="goToPage(2)">2</button>
+                        <button class="btn btn-sm btn-outline" onclick="goToPage(3)">3</button>
+                        <button class="btn btn-sm btn-outline" onclick="nextPage()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- Add/Edit Recruiter Modal -->
-    <div class="modal" id="recruiterModal">
-        <div class="modal-content glassmorphism">
-            <div class="modal-header">
-                <h3 id="modalTitle">Add New Recruiter</h3>
-                <button class="close-btn" onclick="closeRecruiterModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <form class="recruiter-form" id="recruiterForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="recruiterName">Recruiter Name *</label>
-                        <input type="text" id="recruiterName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="companyName">Company/Contractor Name *</label>
-                        <input type="text" id="companyName" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="recruiterPhone">Phone Number *</label>
-                        <input type="tel" id="recruiterPhone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="recruiterEmail">Email Address *</label>
-                        <input type="email" id="recruiterEmail" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="recruiterLocation">Location *</label>
-                        <select id="recruiterLocation" required>
-                            <option value="">Select Location</option>
-                            <option value="delhi">Delhi</option>
-                            <option value="mumbai">Mumbai</option>
-                            <option value="bangalore">Bangalore</option>
-                            <option value="chennai">Chennai</option>
-                            <option value="kolkata">Kolkata</option>
-                            <option value="hyderabad">Hyderabad</option>
-                            <option value="pune">Pune</option>
-                            <option value="jaipur">Jaipur</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="recruiterStatus">Status *</label>
-                        <select id="recruiterStatus" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                            <option value="suspended">Suspended</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="recruiterAddress">Address</label>
-                    <textarea id="recruiterAddress" rows="3" placeholder="Enter complete address"></textarea>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="recruiterNotes">Notes</label>
-                    <textarea id="recruiterNotes" rows="2" placeholder="Additional notes about the recruiter"></textarea>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeRecruiterModal()">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Save Recruiter
-                    </button>
-                </div>
-            </form>
-        </div>
     </div>
     
     <!-- Footer -->
     <footer class="crm-footer">
         <div class="footer-content">
-            <p>&copy; 2024 12th FailJobs CRM. All rights reserved.</p>
-            <p>Contact: contact@12th-failjobs.com</p>
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
             <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
                 <i class="fas fa-external-link-alt"></i> Official Website
             </a></p>
@@ -284,5 +1305,161 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="sidebar-toggle.js"></script>
+    <script>
+        // Simple navigation fix
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            // Add click event to each link
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Skip logout and empty links
+                    if (href === '#' || href.includes('logout')) {
+                        return;
+                    }
+                    
+                    // Navigate to the page
+                    window.location.href = href;
+                });
+            });
+            
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('a[href*="logout"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            });
+        });
+
+        // Recruiters management functions
+        function searchRecruiters(searchTerm) {
+            console.log('Searching recruiters:', searchTerm);
+            // Implementation for search functionality
+        }
+
+        function exportRecruiters() {
+            console.log('Exporting recruiters data');
+            // Implementation for export functionality
+        }
+
+        function addRecruiter() {
+            console.log('Adding new recruiter');
+            // Implementation for add recruiter modal
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const performance = document.getElementById('performanceFilter').value;
+            const experience = document.getElementById('experienceFilter').value;
+            const region = document.getElementById('regionFilter').value;
+            
+            console.log('Applying filters:', { status, performance, experience, region });
+            // Implementation for filter functionality
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('performanceFilter').value = '';
+            document.getElementById('experienceFilter').value = '';
+            document.getElementById('regionFilter').value = '';
+            
+            console.log('Filters cleared');
+            // Implementation for clear filters
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.recruiter-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        function bulkActivate() {
+            const selectedCheckboxes = document.querySelectorAll('.recruiter-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one recruiter to activate');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to activate ${selectedCheckboxes.length} recruiters?`)) {
+                console.log('Bulk activating recruiters');
+                // Implementation for bulk activate
+            }
+        }
+
+        function bulkSuspend() {
+            const selectedCheckboxes = document.querySelectorAll('.recruiter-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one recruiter to suspend');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to suspend ${selectedCheckboxes.length} recruiters?`)) {
+                console.log('Bulk suspending recruiters');
+                // Implementation for bulk suspend
+            }
+        }
+
+        function bulkDelete() {
+            const selectedCheckboxes = document.querySelectorAll('.recruiter-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one recruiter to delete');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${selectedCheckboxes.length} recruiters? This action cannot be undone.`)) {
+                console.log('Bulk deleting recruiters');
+                // Implementation for bulk delete
+            }
+        }
+
+        function viewRecruiter(recruiterId) {
+            console.log('Viewing recruiter:', recruiterId);
+            // Implementation for view recruiter modal
+        }
+
+        function editRecruiter(recruiterId) {
+            console.log('Editing recruiter:', recruiterId);
+            // Implementation for edit recruiter modal
+        }
+
+        function assignJobs(recruiterId) {
+            console.log('Assigning jobs to recruiter:', recruiterId);
+            // Implementation for assign jobs modal
+        }
+
+        function deleteRecruiter(recruiterId) {
+            if (confirm(`Are you sure you want to delete recruiter ${recruiterId}? This action cannot be undone.`)) {
+                console.log('Deleting recruiter:', recruiterId);
+                // Implementation for delete recruiter
+            }
+        }
+
+        function previousPage() {
+            console.log('Going to previous page');
+            // Implementation for pagination
+        }
+
+        function nextPage() {
+            console.log('Going to next page');
+            // Implementation for pagination
+        }
+
+        function goToPage(page) {
+            console.log('Going to page:', page);
+            // Implementation for pagination
+        }
+    </script>
+    <script src="modal-system.js"></script>
 </body>
 </html>
