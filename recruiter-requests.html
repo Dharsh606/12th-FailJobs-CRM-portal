@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests - 12th FailJobs CRM | Powered by Yugayatra Retail</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./modal-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Recruiter Requests Styles */
+        .requests-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #004e92, #007bff); }
+        .stat-icon.green { background: linear-gradient(135deg, #28a745, #20c997); }
+        .stat-icon.orange { background: linear-gradient(135deg, #fd7e14, #ffc107); }
+        .stat-icon.purple { background: linear-gradient(135deg, #6f42c1, #e83e8c); }
+
+        .stat-info h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .stat-info p {
+            font-size: 1rem;
+            color: #666;
+            margin: 0 0 10px 0;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .stat-change.negative {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .stat-change.neutral {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .requests-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .requests-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 78, 146, 0.1);
+        }
+
+        .requests-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .requests-header h3 i {
+            color: #004e92;
+        }
+
+        .request-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .request-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #004e92, #007bff);
+        }
+
+        .request-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 78, 146, 0.15);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .request-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .request-client {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .request-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .request-status.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .request-status.approved {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .request-status.rejected {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .request-details {
+            margin-bottom: 20px;
+        }
+
+        .request-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .request-detail i {
+            color: #004e92;
+            width: 20px;
+        }
+
+        .request-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            max-height: 80px;
+            overflow: hidden;
+        }
+
+        .request-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 78, 146, 0.1);
+        }
+
+        .request-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .request-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        .btn-primary {
+            background: #004e92;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #003366;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #004e92;
+            color: #004e92;
+        }
+
+        .btn-outline:hover {
+            background: #004e92;
+            color: white;
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .filters-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filters-header h3 i {
+            color: #004e92;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px 15px;
+            border: 1px solid rgba(0, 78, 146, 0.2);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #004e92;
+            box-shadow: 0 0 0 3px rgba(0, 78, 146, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .requests-content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .request-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <p style="font-weight: bold; color: #004e92; font-size: 12px; margin-bottom: 8px; text-align: center;">Product of Yuga Yatra retail</p>
+                <div class="logo">
+                    <img src="assets/logo.png" alt="12th FailJobs Logo">
+                    <h1>12th FailJobs</h1>
+                </div>
+                <p>CRM Portal</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="recruiter-dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-jobs.html">
+                            <i class="fas fa-briefcase"></i>
+                            <span>My Jobs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-workers.html">
+                            <i class="fas fa-users"></i>
+                            <span>Workers</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="recruiter-requests.html">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Requests</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-profile.html">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="login.html">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header glassmorphism">
+                <div class="header-left">
+                    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>Requests</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar glassmorphism">
+                        <input type="text" placeholder="Search requests..." onkeyup="searchRequests(this.value)">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary glassmorphism" onclick="exportRequests()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button class="btn btn-primary glassmorphism" onclick="createRequest()">
+                            <i class="fas fa-plus"></i> New Request
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Requests Content -->
+            <main class="requests-content">
+                <!-- Statistics Cards -->
+                <div class="stats-grid glassmorphism">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>12</h3>
+                            <p>Pending Requests</p>
+                            <span class="stat-change positive">+3 this week</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>48</h3>
+                            <p>Approved</p>
+                            <span class="stat-change positive">+8 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>5</h3>
+                            <p>Rejected</p>
+                            <span class="stat-change neutral">+1 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>2.3</h3>
+                            <p>Avg. Days to Process</p>
+                            <span class="stat-change positive">-0.5 days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Section -->
+                <div class="filters-section glassmorphism">
+                    <div class="filters-header">
+                        <h3><i class="fas fa-filter"></i> Filter Requests</h3>
+                        <button class="btn btn-sm btn-outline" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </button>
+                    </div>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="statusFilter">Status</label>
+                            <select id="statusFilter" onchange="applyFilters()">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="typeFilter">Request Type</label>
+                            <select id="typeFilter" onchange="applyFilters()">
+                                <option value="">All Types</option>
+                                <option value="job">Job Request</option>
+                                <option value="worker">Worker Request</option>
+                                <option value="client">Client Request</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="priorityFilter">Priority</label>
+                            <select id="priorityFilter" onchange="applyFilters()">
+                                <option value="">All Priorities</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="dateFilter">Date Range</label>
+                            <select id="dateFilter" onchange="applyFilters()">
+                                <option value="">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requests Grid -->
+                <div class="requests-section glassmorphism">
+                    <div class="requests-header">
+                        <h3><i class="fas fa-list"></i> My Requests</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-sm btn-success" onclick="bulkApprove()">
+                                <i class="fas fa-check"></i> Bulk Approve
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="request-grid">
+                        <div class="request-card">
+                            <div class="request-header">
+                                <div>
+                                    <h4 class="request-title">Need 5 Carpenters for Project</h4>
+                                    <p class="request-client">ABC Construction Co.</p>
+                                </div>
+                                <span class="request-status pending">Pending</span>
+                            </div>
+                            <div class="request-details">
+                                <div class="request-detail">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Job Request</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>High Priority</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Delhi, India</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Start: 15th March</span>
+                                </div>
+                            </div>
+                            <div class="request-description">
+                                We need 5 experienced carpenters for a commercial construction project starting next week. Duration: 3 months. Must have minimum 3 years experience...
+                            </div>
+                            <div class="request-footer">
+                                <div class="request-meta">
+                                    <span><i class="fas fa-calendar"></i> 2 days ago</span>
+                                    <span><i class="fas fa-user"></i> John Smith</span>
+                                </div>
+                                <div class="request-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="viewRequest('R001')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="approveRequest('R001')">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="editRequest('R001')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="request-card">
+                            <div class="request-header">
+                                <div>
+                                    <h4 class="request-title">Looking for Electricians</h4>
+                                    <p class="request-client">Tech Solutions Pvt Ltd</p>
+                                </div>
+                                <span class="request-status approved">Approved</span>
+                            </div>
+                            <div class="request-details">
+                                <div class="request-detail">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Job Request</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Medium Priority</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Mumbai, India</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Start: 20th March</span>
+                                </div>
+                            </div>
+                            <div class="request-description">
+                                Require 3 electricians for office wiring project. Must be certified and have experience with commercial installations...
+                            </div>
+                            <div class="request-footer">
+                                <div class="request-meta">
+                                    <span><i class="fas fa-calendar"></i> 5 days ago</span>
+                                    <span><i class="fas fa-user"></i> Sarah Johnson</span>
+                                </div>
+                                <div class="request-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="viewRequest('R002')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="assignWorkers('R002')">
+                                        <i class="fas fa-users"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="editRequest('R002')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="request-card">
+                            <div class="request-header">
+                                <div>
+                                    <h4 class="request-title">Emergency Plumbing Work</h4>
+                                    <p class="request-client">Residential Client</p>
+                                </div>
+                                <span class="request-status pending">Pending</span>
+                            </div>
+                            <div class="request-details">
+                                <div class="request-detail">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Other Request</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>High Priority</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Bangalore, India</span>
+                                </div>
+                                <div class="request-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Immediate</span>
+                                </div>
+                            </div>
+                            <div class="request-description">
+                                    Urgent plumbing repair needed for residential building. Water leakage in main pipeline. Need experienced plumber immediately...
+                            </div>
+                            <div class="request-footer">
+                                <div class="request-meta">
+                                    <span><i class="fas fa-calendar"></i> 1 hour ago</span>
+                                    <span><i class="fas fa-user"></i> Mike Wilson</span>
+                                </div>
+                                <div class="request-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="viewRequest('R003')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="approveRequest('R003')">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="rejectRequest('R003')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="crm-footer">
+        <div class="footer-content">
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
+            <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                <i class="fas fa-external-link-alt"></i> Official Website
+            </a></p>
+        </div>
+    </footer>
+
+    <script src="./script.js"></script>
+    <script src="./sidebar-toggle.js"></script>
+    <script src="./direct-actions.js"></script>
+    <script>
+        // Recruiter Requests Page Functions
+        function searchRequests(searchTerm) {
+            console.log('Searching requests:', searchTerm);
+            // Implementation for request search
+        }
+
+        function exportRequests() {
+            console.log('Exporting requests data');
+            // Implementation for export
+            showDirectMessage('Request data exported successfully!', 'success');
+        }
+
+        function createRequest() {
+            console.log('Creating new request');
+            // Implementation for creating request
+            showDirectMessage('Request created successfully!', 'success');
+        }
+
+        function viewRequest(requestId) {
+            console.log('Viewing request details:', requestId);
+            // Implementation for viewing request details
+        }
+
+        function approveRequest(requestId) {
+            console.log('Approving request:', requestId);
+            // Implementation for approving request
+            showDirectMessage('Request approved successfully!', 'success');
+        }
+
+        function rejectRequest(requestId) {
+            console.log('Rejecting request:', requestId);
+            // Implementation for rejecting request
+            showDirectMessage('Request rejected!', 'info');
+        }
+
+        function editRequest(requestId) {
+            console.log('Editing request:', requestId);
+            // Implementation for editing request
+        }
+
+        function assignWorkers(requestId) {
+            console.log('Assigning workers to request:', requestId);
+            // Implementation for assigning workers
+            showDirectMessage('Workers assigned successfully!', 'success');
+        }
+
+        function bulkApprove() {
+            console.log('Bulk approving requests');
+            // Implementation for bulk approve
+            showDirectMessage('Requests approved successfully!', 'success');
+        }
+
+        function applyFilters() {
+            console.log('Applying filters');
+            // Implementation for applying filters
+        }
+
+        function clearFilters() {
+            console.log('Clearing filters');
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+        }
+    </script>
+</body>
+</html>

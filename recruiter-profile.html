@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Profile - 12th FailJobs CRM | Powered by Yugayatra Retail</title>
+    <title>Recruiter Profile - 12th FailJobs CRM | Powered by Yugayatra Retail</title>
     <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="./modal-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -400,43 +400,31 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li>
-                        <a href="dashboard.html">
+                        <a href="recruiter-dashboard.html">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="workers.html">
+                        <a href="recruiter-jobs.html">
+                            <i class="fas fa-briefcase"></i>
+                            <span>My Jobs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-workers.html">
                             <i class="fas fa-users"></i>
                             <span>Workers</span>
                         </a>
                     </li>
                     <li>
-                        <a href="jobs.html">
-                            <i class="fas fa-briefcase"></i>
-                            <span>Jobs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="recruiters.html">
-                            <i class="fas fa-user-tie"></i>
-                            <span>Recruiters</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="requests.html">
+                        <a href="recruiter-requests.html">
                             <i class="fas fa-clipboard-list"></i>
                             <span>Requests</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="analytics.html">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Analytics</span>
-                        </a>
-                    </li>
                     <li class="active">
-                        <a href="admin-profile.html">
+                        <a href="recruiter-profile.html">
                             <i class="fas fa-user"></i>
                             <span>My Profile</span>
                         </a>
@@ -459,7 +447,7 @@
                     <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h1>Admin Profile</h1>
+                    <h1>Recruiter Profile</h1>
                 </div>
                 <div class="header-right">
                     <div class="search-container">
@@ -482,33 +470,33 @@
                 <!-- Profile Header -->
                 <div class="profile-header">
                     <div class="profile-avatar">
-                        <img src="https://via.placeholder.com/120x120/004e92/ffffff?text=JD" alt="Admin Avatar" class="avatar-img" id="avatarImg">
+                        <img src="https://via.placeholder.com/120x120/004e92/ffffff?text=RS" alt="Recruiter Avatar" class="avatar-img" id="avatarImg">
                         <div class="avatar-upload" onclick="uploadAvatar()">
                             <i class="fas fa-camera"></i>
                         </div>
                     </div>
                     <div class="profile-info">
-                        <h1>John Anderson</h1>
-                        <p>System Administrator</p>
-                        <p>john.anderson@12th-failjobs.com</p>
-                        <p>+91 98765 43210</p>
-                        <p>Employee ID: EMP001</p>
+                        <h1>Rahul Sharma</h1>
+                        <p>Senior Recruiter</p>
+                        <p>rahul.sharma@12th-failjobs.com</p>
+                        <p>+91 98765 43211</p>
+                        <p>Recruiter ID: REC001</p>
                     </div>
                     <div class="profile-stats">
-                        <div class="stat-item">
-                            <h4>2,847</h4>
-                            <p>Workers Managed</p>
-                        </div>
                         <div class="stat-item">
                             <h4>156</h4>
                             <p>Jobs Posted</p>
                         </div>
                         <div class="stat-item">
-                            <h4>98%</h4>
+                            <h4>1,234</h4>
+                            <p>Workers Placed</p>
+                        </div>
+                        <div class="stat-item">
+                            <h4>89%</h4>
                             <p>Success Rate</p>
                         </div>
                         <div class="stat-item">
-                            <h4>4.8</h4>
+                            <h4>4.6</h4>
                             <p>Average Rating</p>
                         </div>
                     </div>
@@ -527,31 +515,31 @@
                         <div class="info-grid" id="personal-info">
                             <div class="info-item">
                                 <span class="info-label">Full Name</span>
-                                <span class="info-value" data-field="name">John Anderson</span>
+                                <span class="info-value" data-field="name">Rahul Sharma</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Email</span>
-                                <span class="info-value" data-field="email">john.anderson@12th-failjobs.com</span>
+                                <span class="info-value" data-field="email">rahul.sharma@12th-failjobs.com</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Phone</span>
-                                <span class="info-value" data-field="phone">+91 98765 43210</span>
+                                <span class="info-value" data-field="phone">+91 98765 43211</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Date of Birth</span>
-                                <span class="info-value" data-field="dob">March 15, 1990</span>
+                                <span class="info-value" data-field="dob">June 22, 1988</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Address</span>
-                                <span class="info-value" data-field="address">123 Main Street, Delhi, India</span>
+                                <span class="info-value" data-field="address">456 Park Avenue, Mumbai, India</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Emergency Contact</span>
-                                <span class="info-value" data-field="emergency">+91 87654 32109</span>
+                                <span class="info-value" data-field="emergency">+91 98765 43212</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Blood Group</span>
-                                <span class="info-value" data-field="bloodGroup">B+</span>
+                                <span class="info-value" data-field="bloodGroup">O+</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Nationality</span>
@@ -571,100 +559,116 @@
                         <div class="info-grid" id="professional-info">
                             <div class="info-item">
                                 <span class="info-label">Department</span>
-                                <span class="info-value" data-field="department">IT Administration</span>
+                                <span class="info-value" data-field="department">Recruitment</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Role</span>
-                                <span class="info-value" data-field="role">System Administrator</span>
+                                <span class="info-value" data-field="role">Senior Recruiter</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">Employee ID</span>
-                                <span class="info-value" data-field="employeeId">EMP001</span>
+                                <span class="info-label">Recruiter ID</span>
+                                <span class="info-value" data-field="recruiterId">REC001</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Join Date</span>
-                                <span class="info-value" data-field="joinDate">January 15, 2022</span>
+                                <span class="info-value" data-field="joinDate">March 10, 2021</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">Reporting Manager</span>
-                                <span class="info-value" data-field="reportingManager">Sarah Johnson</span>
+                                <span class="info-label">Team Lead</span>
+                                <span class="info-value" data-field="teamLead">Priya Singh</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Work Location</span>
-                                <span class="info-value" data-field="workLocation">Delhi Office</span>
+                                <span class="info-value" data-field="workLocation">Mumbai Office</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Work Email</span>
-                                <span class="info-value" data-field="workEmail">john.anderson@company.com</span>
+                                <span class="info-value" data-field="workEmail">rahul.sharma@company.com</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Work Phone</span>
-                                <span class="info-value" data-field="workPhone">+91 11 2345 6789</span>
+                                <span class="info-value" data-field="workPhone">+91 22 3456 7890</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Experience</span>
-                                <span class="info-value" data-field="experience">8 Years</span>
+                                <span class="info-value" data-field="experience">6 Years</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">Skills</span>
-                                <span class="info-value" data-field="skills">System Admin, Network Security, Database Management</span>
+                                <span class="info-label">Specialization</span>
+                                <span class="info-value" data-field="specialization">IT Recruitment, Technical Staffing</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Security Settings -->
-                    <div class="profile-section glassmorphism" id="security-section">
+                    <!-- Performance Metrics -->
+                    <div class="profile-section glassmorphism" id="performance-section">
                         <div class="section-header">
-                            <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
-                            <button class="btn btn-sm btn-outline" id="edit-security-btn" onclick="toggleEditMode('security')">
-                                <i class="fas fa-edit"></i> <span id="edit-security-text">Edit</span>
+                            <h3><i class="fas fa-chart-line"></i> Performance Metrics</h3>
+                            <button class="btn btn-sm btn-outline" id="edit-performance-btn" onclick="toggleEditMode('performance')">
+                                <i class="fas fa-edit"></i> <span id="edit-performance-text">Edit</span>
                             </button>
                         </div>
                         <div class="settings-grid">
                             <div class="setting-item">
-                                <span class="setting-label">Two-Factor Authentication</span>
-                                <div class="toggle-switch active" onclick="toggleSetting(this, '2fa')"></div>
+                                <span class="setting-label">Monthly Target</span>
+                                <span class="info-value" data-field="monthlyTarget">25 Jobs</span>
                             </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Current Month</span>
+                                <span class="info-value" data-field="currentMonth">18 Jobs</span>
+                            </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Achievement Rate</span>
+                                <span class="info-value" data-field="achievementRate">72%</span>
+                            </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Quality Score</span>
+                                <span class="info-value" data-field="qualityScore">4.6/5.0</span>
+                            </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Response Time</span>
+                                <span class="info-value" data-field="responseTime">2.3 Hours</span>
+                            </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Client Satisfaction</span>
+                                <span class="info-value" data-field="clientSatisfaction">91%</span>
+                            </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Commission Rate</span>
+                                <span class="info-value" data-field="commissionRate">8.5%</span>
+                            </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Total Placements</span>
+                                <span class="info-value" data-field="totalPlacements">1,234</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Communication Preferences -->
+                    <div class="profile-section glassmorphism" id="preferences-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-bell"></i> Communication Preferences</h3>
+                            <button class="btn btn-sm btn-outline" id="edit-preferences-btn" onclick="toggleEditMode('preferences')">
+                                <i class="fas fa-edit"></i> <span id="edit-preferences-text">Edit</span>
+                            </button>
+                        </div>
+                        <div class="settings-grid">
                             <div class="setting-item">
                                 <span class="setting-label">Email Notifications</span>
                                 <div class="toggle-switch active" onclick="toggleSetting(this, 'email')"></div>
                             </div>
                             <div class="setting-item">
                                 <span class="setting-label">SMS Alerts</span>
-                                <div class="toggle-switch" onclick="toggleSetting(this, 'sms')"></div>
+                                <div class="toggle-switch active" onclick="toggleSetting(this, 'sms')"></div>
                             </div>
                             <div class="setting-item">
-                                <span class="setting-label">Login Alerts</span>
-                                <div class="toggle-switch active" onclick="toggleSetting(this, 'login')"></div>
+                                <span class="setting-label">Job Alerts</span>
+                                <div class="toggle-switch active" onclick="toggleSetting(this, 'jobs')"></div>
                             </div>
                             <div class="setting-item">
-                                <span class="setting-label">Password Expiry</span>
-                                <span class="info-value" data-field="passwordExpiry">90 days</span>
+                                <span class="setting-label">Weekly Reports</span>
+                                <div class="toggle-switch active" onclick="toggleSetting(this, 'reports')"></div>
                             </div>
-                            <div class="setting-item">
-                                <span class="setting-label">Last Password Change</span>
-                                <span class="info-value" data-field="lastPasswordChange">30 days ago</span>
-                            </div>
-                            <div class="setting-item">
-                                <span class="setting-label">Failed Login Attempts</span>
-                                <span class="info-value" data-field="failedLoginAttempts">0</span>
-                            </div>
-                            <div class="setting-item">
-                                <span class="setting-label">Session Timeout</span>
-                                <span class="info-value" data-field="sessionTimeout">30 minutes</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- System Preferences -->
-                    <div class="profile-section glassmorphism" id="preferences-section">
-                        <div class="section-header">
-                            <h3><i class="fas fa-sliders-h"></i> System Preferences</h3>
-                            <button class="btn btn-sm btn-outline" id="edit-preferences-btn" onclick="toggleEditMode('preferences')">
-                                <i class="fas fa-edit"></i> <span id="edit-preferences-text">Edit</span>
-                            </button>
-                        </div>
-                        <div class="settings-grid">
                             <div class="setting-item">
                                 <span class="setting-label">Language</span>
                                 <span class="info-value" data-field="language">English</span>
@@ -674,28 +678,12 @@
                                 <span class="info-value" data-field="timezone">IST (UTC+5:30)</span>
                             </div>
                             <div class="setting-item">
-                                <span class="setting-label">Date Format</span>
-                                <span class="info-value" data-field="dateFormat">DD/MM/YYYY</span>
-                            </div>
-                            <div class="setting-item">
-                                <span class="setting-label">Theme</span>
-                                <span class="info-value" data-field="theme">Light</span>
-                            </div>
-                            <div class="setting-item">
                                 <span class="setting-label">Currency</span>
                                 <span class="info-value" data-field="currency">INR (₹)</span>
                             </div>
                             <div class="setting-item">
                                 <span class="setting-label">Dashboard Layout</span>
-                                <span class="info-value" data-field="dashboardLayout">Grid View</span>
-                            </div>
-                            <div class="setting-item">
-                                <span class="setting-label">Email Frequency</span>
-                                <span class="info-value" data-field="emailFreq">Daily</span>
-                            </div>
-                            <div class="setting-item">
-                                <span class="setting-label">Auto-Save</span>
-                                <div class="toggle-switch active" onclick="toggleSetting(this, 'autosave')"></div>
+                                <span class="info-value" data-field="dashboardLayout">List View</span>
                             </div>
                         </div>
                     </div>
@@ -703,7 +691,7 @@
                     <!-- Recent Activity -->
                     <div class="profile-section glassmorphism">
                         <div class="section-header">
-                            <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                            <h3><i class="fas fa-history"></i> Recruitment Activity</h3>
                             <button class="btn btn-sm btn-outline" onclick="viewAllActivity()">
                                 View All
                             </button>
@@ -711,41 +699,41 @@
                         <div class="activity-timeline">
                             <div class="activity-item">
                                 <div class="activity-icon">
-                                    <i class="fas fa-user-plus"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <h4>New Worker Added</h4>
-                                    <p>Added Raj Kumar (Carpenter) to system</p>
-                                    <div class="activity-time">2 hours ago</div>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon">
                                     <i class="fas fa-briefcase"></i>
                                 </div>
                                 <div class="activity-details">
-                                    <h4>Job Created</h4>
-                                    <p>Created new job: Home Renovation Project</p>
-                                    <div class="activity-time">5 hours ago</div>
+                                    <h4>New Job Posted</h4>
+                                    <p>Posted job: Senior Software Developer position</p>
+                                    <div class="activity-time">3 hours ago</div>
                                 </div>
                             </div>
                             <div class="activity-item">
                                 <div class="activity-icon">
-                                    <i class="fas fa-chart-line"></i>
+                                    <i class="fas fa-user-check"></i>
                                 </div>
                                 <div class="activity-details">
-                                    <h4>Report Generated</h4>
-                                    <p>Generated monthly performance report</p>
+                                    <h4>Candidate Placed</h4>
+                                    <p>Successfully placed Amit Kumar as Web Developer</p>
+                                    <div class="activity-time">6 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <h4>Client Meeting</h4>
+                                    <p>Conducted interview with Tech Solutions Inc.</p>
                                     <div class="activity-time">1 day ago</div>
                                 </div>
                             </div>
                             <div class="activity-item">
                                 <div class="activity-icon">
-                                    <i class="fas fa-cog"></i>
+                                    <i class="fas fa-trophy"></i>
                                 </div>
                                 <div class="activity-details">
-                                    <h4>System Update</h4>
-                                    <p>Updated CRM system to version 2.4.1</p>
+                                    <h4>Target Achieved</h4>
+                                    <p>Achieved monthly recruitment target of 25 jobs</p>
                                     <div class="activity-time">2 days ago</div>
                                 </div>
                             </div>
@@ -907,16 +895,16 @@
             });
             
             // Save to localStorage
-            const currentProfile = JSON.parse(localStorage.getItem('adminProfile') || '{}');
+            const currentProfile = JSON.parse(localStorage.getItem('recruiterProfile') || '{}');
             currentProfile[section] = updatedData;
-            localStorage.setItem('adminProfile', JSON.stringify(currentProfile));
+            localStorage.setItem('recruiterProfile', JSON.stringify(currentProfile));
             
             showDirectMessage(`${section} information updated successfully!`, 'success');
         }
 
         // Save All Profile Data
         function saveAllProfile() {
-            const sections = ['personal', 'professional', 'preferences'];
+            const sections = ['personal', 'professional', 'performance', 'preferences'];
             let allData = {};
             
             sections.forEach(section => {
@@ -934,7 +922,7 @@
             });
             
             // Save to localStorage
-            localStorage.setItem('adminProfile', JSON.stringify(allData));
+            localStorage.setItem('recruiterProfile', JSON.stringify(allData));
             
             showDirectMessage('All profile data saved successfully!', 'success');
         }
@@ -975,51 +963,50 @@
         function exportProfile() {
             const profileData = {
                 personal: {
-                    name: 'John Anderson',
-                    email: 'john.anderson@12th-failjobs.com',
-                    phone: '+91 98765 43210',
-                    dob: 'March 15, 1990',
-                    address: '123 Main Street, Delhi, India',
-                    emergency: '+91 87654 32109',
-                    bloodGroup: 'B+',
+                    name: 'Rahul Sharma',
+                    email: 'rahul.sharma@12th-failjobs.com',
+                    phone: '+91 98765 43211',
+                    dob: 'June 22, 1988',
+                    address: '456 Park Avenue, Mumbai, India',
+                    emergency: '+91 98765 43212',
+                    bloodGroup: 'O+',
                     nationality: 'Indian'
                 },
                 professional: {
-                    department: 'IT Administration',
-                    role: 'System Administrator',
-                    employeeId: 'EMP001',
-                    joinDate: 'January 15, 2022',
-                    reportingManager: 'Sarah Johnson',
-                    workLocation: 'Delhi Office',
-                    workEmail: 'john.anderson@company.com',
-                    workPhone: '+91 11 2345 6789',
-                    experience: '8 Years',
-                    skills: 'System Admin, Network Security, Database Management'
+                    department: 'Recruitment',
+                    role: 'Senior Recruiter',
+                    recruiterId: 'REC001',
+                    joinDate: 'March 10, 2021',
+                    teamLead: 'Priya Singh',
+                    workLocation: 'Mumbai Office',
+                    workEmail: 'rahul.sharma@company.com',
+                    workPhone: '+91 22 3456 7890',
+                    experience: '6 Years',
+                    specialization: 'IT Recruitment, Technical Staffing'
                 },
-                security: {
-                    twoFactor: 'Enabled',
-                    emailNotifications: 'Enabled',
-                    smsAlerts: 'Disabled',
-                    loginAlerts: 'Enabled',
-                    passwordExpiry: '90 days',
-                    lastPasswordChange: '30 days ago',
-                    failedLoginAttempts: '0',
-                    sessionTimeout: '30 minutes'
+                performance: {
+                    monthlyTarget: '25 Jobs',
+                    currentMonth: '18 Jobs',
+                    achievementRate: '72%',
+                    qualityScore: '4.6/5.0',
+                    responseTime: '2.3 Hours',
+                    clientSatisfaction: '91%',
+                    commissionRate: '8.5%'
                 },
                 preferences: {
+                    emailNotifications: 'Enabled',
+                    smsAlerts: 'Enabled',
+                    jobAlerts: 'Enabled',
+                    weeklyReports: 'Enabled',
                     language: 'English',
                     timezone: 'IST (UTC+5:30)',
-                    dateFormat: 'DD/MM/YYYY',
-                    theme: 'Light',
                     currency: 'INR (₹)',
-                    dashboardLayout: 'Grid View',
-                    emailFreq: 'Daily',
-                    autosave: 'Enabled'
+                    dashboardLayout: 'List View'
                 }
             };
             
             // Create CSV content
-            let csvContent = 'Admin Profile Data Export\n';
+            let csvContent = 'Recruiter Profile Data Export\n';
             csvContent += 'Generated on:,' + new Date().toLocaleString() + '\n\n';
             
             csvContent += 'PERSONAL INFORMATION\n';
@@ -1034,9 +1021,9 @@
                 csvContent += `"${key}","${value}"\n`;
             }
             
-            csvContent += '\nSECURITY SETTINGS\n';
+            csvContent += '\nPERFORMANCE METRICS\n';
             csvContent += 'Field,Value\n';
-            for (const [key, value] of Object.entries(profileData.security)) {
+            for (const [key, value] of Object.entries(profileData.performance)) {
                 csvContent += `"${key}","${value}"\n`;
             }
             
@@ -1047,7 +1034,7 @@
             }
             
             // Download CSV file
-            downloadDirectCSV(csvContent, 'admin_profile_export');
+            downloadDirectCSV(csvContent, 'recruiter_profile_export');
             showDirectMessage('Profile data exported successfully!', 'success');
         }
 
@@ -1077,7 +1064,7 @@
                         if (avatarImg) {
                             avatarImg.src = e.target.result;
                             showDirectMessage('Avatar uploaded successfully!', 'success');
-                            localStorage.setItem('adminAvatar', e.target.result);
+                            localStorage.setItem('recruiterAvatar', e.target.result);
                         }
                     };
                     reader.readAsDataURL(file);
@@ -1092,31 +1079,39 @@
             element.classList.toggle('active');
             const isActive = element.classList.contains('active');
             
-            localStorage.setItem(`setting_${setting}`, isActive);
+            localStorage.setItem(`recruiter_setting_${setting}`, isActive);
             
-            const settingName = setting.replace('2fa', 'Two-Factor Authentication')
-                                    .replace('email', 'Email Notifications')
+            const settingName = setting.replace('email', 'Email Notifications')
                                     .replace('sms', 'SMS Alerts')
-                                    .replace('login', 'Login Alerts')
-                                    .replace('autosave', 'Auto-Save');
+                                    .replace('jobs', 'Job Alerts')
+                                    .replace('reports', 'Weekly Reports');
             
             showDirectMessage(`${settingName} ${isActive ? 'enabled' : 'disabled'}`, 'info');
+        }
+
+        // Role-based navigation function
+        function navigateAsRecruiter(page) {
+            // Set the user role in localStorage
+            localStorage.setItem('userRole', 'recruiter');
+            
+            // Navigate to the page with recruiter context
+            window.location.href = page + '.html?role=recruiter';
         }
 
         // View All Activity
         function viewAllActivity() {
             const allActivities = [
-                { icon: 'fa-user-plus', title: 'New Worker Added', desc: 'Added Raj Kumar (Carpenter) to system', time: '2 hours ago' },
-                { icon: 'fa-briefcase', title: 'Job Created', desc: 'Created new job: Home Renovation Project', time: '5 hours ago' },
-                { icon: 'fa-chart-line', title: 'Report Generated', desc: 'Generated monthly performance report', time: '1 day ago' },
-                { icon: 'fa-cog', title: 'System Update', desc: 'Updated CRM system to version 2.4.1', time: '2 days ago' },
-                { icon: 'fa-user-edit', title: 'Profile Updated', desc: 'Updated personal information', time: '3 days ago' },
-                { icon: 'fa-shield-alt', title: 'Security Change', desc: 'Changed password and enabled 2FA', time: '4 days ago' },
-                { icon: 'fa-users', title: 'Team Meeting', desc: 'Conducted weekly team sync meeting', time: '5 days ago' },
-                { icon: 'fa-database', title: 'Data Backup', desc: 'Completed scheduled database backup', time: '1 week ago' }
+                { icon: 'fa-briefcase', title: 'New Job Posted', desc: 'Posted job: Senior Software Developer position', time: '3 hours ago' },
+                { icon: 'fa-user-check', title: 'Candidate Placed', desc: 'Successfully placed Amit Kumar as Web Developer', time: '6 hours ago' },
+                { icon: 'fa-phone', title: 'Client Meeting', desc: 'Conducted interview with Tech Solutions Inc.', time: '1 day ago' },
+                { icon: 'fa-trophy', title: 'Target Achieved', desc: 'Achieved monthly recruitment target of 25 jobs', time: '2 days ago' },
+                { icon: 'fa-users', title: 'Team Meeting', desc: 'Conducted weekly recruitment team sync meeting', time: '3 days ago' },
+                { icon: 'fa-star', title: 'Client Feedback', desc: 'Received 5-star rating from client for placement', time: '4 days ago' },
+                { icon: 'fa-handshake', title: 'Contract Signed', desc: 'Signed recruitment contract with new client', time: '5 days ago' },
+                { icon: 'fa-chart-line', title: 'Performance Review', desc: 'Completed monthly performance review with manager', time: '1 week ago' }
             ];
             
-            let modalContent = '<h3>Complete Activity History</h3>';
+            let modalContent = '<h3>Complete Recruitment Activity History</h3>';
             modalContent += '<div class="activity-list" style="max-height: 400px; overflow-y: auto;">';
             
             allActivities.forEach(activity => {

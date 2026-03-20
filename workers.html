@@ -431,6 +431,7 @@
     <!-- Collapsible Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
+            <p style="font-weight: bold; color: #004e92; font-size: 12px; margin-bottom: 8px; text-align: center;">Product of Yuga Yatra retail</p>
             <div class="logo">
                 <img src="assets/logo.png" alt="12th FailJobs Logo">
                 <h1>12th FailJobs</h1>
@@ -511,7 +512,7 @@
                     <button class="btn btn-secondary glassmorphism" onclick="exportWorkers()">
                         <i class="fas fa-download"></i> Export
                     </button>
-                    <button class="btn btn-primary glassmorphism" onclick="addWorker()">
+                    <button class="btn btn-primary glassmorphism admin-only" onclick="addWorker()">
                         <i class="fas fa-plus"></i> Add Worker
                     </button>
                 </div>
@@ -630,13 +631,13 @@
                 <div class="workers-header">
                     <h3><i class="fas fa-list"></i> All Workers</h3>
                     <div class="header-actions">
-                        <button class="btn btn-sm btn-success" onclick="bulkActivate()">
+                        <button class="btn btn-sm btn-success admin-only" onclick="bulkActivate()">
                             <i class="fas fa-check"></i> Bulk Activate
                         </button>
-                        <button class="btn btn-sm btn-warning" onclick="bulkSuspend()">
+                        <button class="btn btn-sm btn-warning admin-only" onclick="bulkSuspend()">
                             <i class="fas fa-pause"></i> Bulk Suspend
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="bulkDelete()">
+                        <button class="btn btn-sm btn-danger admin-only" onclick="bulkDelete()">
                             <i class="fas fa-trash"></i> Bulk Delete
                         </button>
                     </div>
@@ -702,13 +703,13 @@
                                         <button class="btn btn-sm btn-primary" onclick="viewWorker('W001')">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-warning" onclick="editWorker('W001')">
+                                        <button class="btn btn-sm btn-warning admin-only" onclick="editWorker('W001')">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="btn btn-sm btn-success" onclick="assignJob('W001')">
                                             <i class="fas fa-briefcase"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteWorker('W001')">
+                                        <button class="btn btn-sm btn-danger admin-only" onclick="deleteWorker('W001')">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -1391,6 +1392,50 @@
             console.log('Going to page:', page);
             // Implementation for pagination
         }
+
+        // Role-based access control
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is recruiter (multiple detection methods)
+            const urlParams = new URLSearchParams(window.location.search);
+            const isRecruiter = window.location.pathname.includes('recruiter-') || 
+                               localStorage.getItem('userRole') === 'recruiter' ||
+                               document.referrer.includes('recruiter-dashboard.html') ||
+                               urlParams.get('role') === 'recruiter';
+            
+            if (isRecruiter) {
+                // Store recruiter role for consistent behavior
+                localStorage.setItem('userRole', 'recruiter');
+                
+                // Hide all admin-only elements
+                const adminElements = document.querySelectorAll('.admin-only');
+                adminElements.forEach(element => {
+                    element.style.display = 'none';
+                });
+                
+                // Update page title for recruiter context
+                document.title = 'My Workers - 12th FailJobs CRM';
+                
+                // Update header text
+                const headerTitle = document.querySelector('h1');
+                if (headerTitle) {
+                    headerTitle.textContent = 'My Workers';
+                }
+                
+                // Hide select all checkbox for recruiters
+                const selectAllCheckbox = document.getElementById('selectAll');
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.style.display = 'none';
+                }
+                
+                // Hide individual worker checkboxes for recruiters
+                const workerCheckboxes = document.querySelectorAll('.worker-checkbox');
+                workerCheckboxes.forEach(checkbox => {
+                    checkbox.style.display = 'none';
+                });
+                
+                console.log('Recruiter mode activated - admin features hidden');
+            }
+        });
     </script>
     <script src="./direct-actions.js"></script>
 </body>

@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Jobs - 12th FailJobs CRM | Powered by Yugayatra Retail</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./modal-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Recruiter Jobs Styles */
+        .jobs-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #004e92, #007bff); }
+        .stat-icon.green { background: linear-gradient(135deg, #28a745, #20c997); }
+        .stat-icon.orange { background: linear-gradient(135deg, #fd7e14, #ffc107); }
+        .stat-icon.purple { background: linear-gradient(135deg, #6f42c1, #e83e8c); }
+
+        .stat-info h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .stat-info p {
+            font-size: 1rem;
+            color: #666;
+            margin: 0 0 10px 0;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .stat-change.negative {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .stat-change.neutral {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .jobs-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .jobs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 78, 146, 0.1);
+        }
+
+        .jobs-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .jobs-header h3 i {
+            color: #004e92;
+        }
+
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #004e92, #007bff);
+        }
+
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 78, 146, 0.15);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .job-company {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .job-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .job-status.active {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .job-status.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .job-status.closed {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .job-details {
+            margin-bottom: 20px;
+        }
+
+        .job-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .job-detail i {
+            color: #004e92;
+            width: 20px;
+        }
+
+        .job-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            max-height: 60px;
+            overflow: hidden;
+        }
+
+        .job-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 78, 146, 0.1);
+        }
+
+        .job-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .job-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        .btn-primary {
+            background: #004e92;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #003366;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #004e92;
+            color: #004e92;
+        }
+
+        .btn-outline:hover {
+            background: #004e92;
+            color: white;
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .filters-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filters-header h3 i {
+            color: #004e92;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px 15px;
+            border: 1px solid rgba(0, 78, 146, 0.2);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #004e92;
+            box-shadow: 0 0 0 3px rgba(0, 78, 146, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .jobs-content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .job-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <p style="font-weight: bold; color: #004e92; font-size: 12px; margin-bottom: 8px; text-align: center;">Product of Yuga Yatra retail</p>
+                <div class="logo">
+                    <img src="assets/logo.png" alt="12th FailJobs Logo">
+                    <h1>12th FailJobs</h1>
+                </div>
+                <p>CRM Portal</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="recruiter-dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="recruiter-jobs.html">
+                            <i class="fas fa-briefcase"></i>
+                            <span>My Jobs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-workers.html">
+                            <i class="fas fa-users"></i>
+                            <span>Workers</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-requests.html">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Requests</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-profile.html">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="login.html">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header glassmorphism">
+                <div class="header-left">
+                    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>My Jobs</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar glassmorphism">
+                        <input type="text" placeholder="Search jobs..." onkeyup="searchJobs(this.value)">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary glassmorphism" onclick="exportJobs()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button class="btn btn-primary glassmorphism" onclick="createJob()">
+                            <i class="fas fa-plus"></i> Create Job
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Jobs Content -->
+            <main class="jobs-content">
+                <!-- Statistics Cards -->
+                <div class="stats-grid glassmorphism">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>24</h3>
+                            <p>Active Jobs</p>
+                            <span class="stat-change positive">+3 this week</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>156</h3>
+                            <p>Total Posted</p>
+                            <span class="stat-change positive">+12 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>89</h3>
+                            <p>Positions Filled</p>
+                            <span class="stat-change neutral">+5 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>4.8</h3>
+                            <p>Avg Rating</p>
+                            <span class="stat-change positive">+0.2 this month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Section -->
+                <div class="filters-section glassmorphism">
+                    <div class="filters-header">
+                        <h3><i class="fas fa-filter"></i> Filter Jobs</h3>
+                        <button class="btn btn-sm btn-outline" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </button>
+                    </div>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="statusFilter">Status</label>
+                            <select id="statusFilter" onchange="applyFilters()">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="categoryFilter">Category</label>
+                            <select id="categoryFilter" onchange="applyFilters()">
+                                <option value="">All Categories</option>
+                                <option value="carpentry">Carpentry</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="painting">Painting</option>
+                                <option value="masonry">Masonry</option>
+                                <option value="welding">Welding</option>
+                                <option value="mechanical">Mechanical</option>
+                                <option value="cleaning">Cleaning</option>
+                                <option value="security">Security</option>
+                                <option value="delivery">Delivery</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="locationFilter">Location</label>
+                            <select id="locationFilter" onchange="applyFilters()">
+                                <option value="">All Locations</option>
+                                <option value="delhi">Delhi</option>
+                                <option value="mumbai">Mumbai</option>
+                                <option value="bangalore">Bangalore</option>
+                                <option value="chennai">Chennai</option>
+                                <option value="kolkata">Kolkata</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="typeFilter">Job Type</label>
+                            <select id="typeFilter" onchange="applyFilters()">
+                                <option value="">All Types</option>
+                                <option value="full-time">Full Time</option>
+                                <option value="part-time">Part Time</option>
+                                <option value="contract">Contract</option>
+                                <option value="temporary">Temporary</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jobs Grid -->
+                <div class="jobs-section glassmorphism">
+                    <div class="jobs-header">
+                        <h3><i class="fas fa-list"></i> My Job Postings</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-sm btn-success" onclick="bulkAction()">
+                                <i class="fas fa-check"></i> Bulk Action
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="job-grid">
+                        <div class="job-card">
+                            <div class="job-header">
+                                <div>
+                                    <h4 class="job-title">Senior Software Developer</h4>
+                                    <p class="job-company">Tech Solutions Inc.</p>
+                                </div>
+                                <span class="job-status active">Active</span>
+                            </div>
+                            <div class="job-details">
+                                <div class="job-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Delhi, India</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Full Time</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-rupee-sign"></i>
+                                    <span>₹8,00,000 - ₹12,00,000</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-users"></i>
+                                    <span>3 positions</span>
+                                </div>
+                            </div>
+                            <div class="job-description">
+                                Looking for an experienced Senior Software Developer to join our growing team. Must have 5+ years of experience in modern web technologies...
+                            </div>
+                            <div class="job-footer">
+                                <div class="job-meta">
+                                    <span><i class="fas fa-calendar"></i> 2 days ago</span>
+                                    <span><i class="fas fa-eye"></i> 45 views</span>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="viewJob('J001')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="editJob('J001')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="promoteJob('J001')">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="job-card">
+                            <div class="job-header">
+                                <div>
+                                    <h4 class="job-title">Web Developer</h4>
+                                    <p class="job-company">Digital Agency Pro</p>
+                                </div>
+                                <span class="job-status active">Active</span>
+                            </div>
+                            <div class="job-details">
+                                <div class="job-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Mumbai, India</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Full Time</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-rupee-sign"></i>
+                                    <span>₹6,00,000 - ₹8,00,000</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-users"></i>
+                                    <span>2 positions</span>
+                                </div>
+                            </div>
+                            <div class="job-description">
+                                We are seeking a talented Web Developer to create amazing user experiences. Strong knowledge of HTML, CSS, JavaScript required...
+                            </div>
+                            <div class="job-footer">
+                                <div class="job-meta">
+                                    <span><i class="fas fa-calendar"></i> 5 days ago</span>
+                                    <span><i class="fas fa-eye"></i> 32 views</span>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="viewJob('J002')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="editJob('J002')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="promoteJob('J002')">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="job-card">
+                            <div class="job-header">
+                                <div>
+                                    <h4 class="job-title">Mobile App Developer</h4>
+                                    <p class="job-company">StartupHub Ventures</p>
+                                </div>
+                                <span class="job-status pending">Pending</span>
+                            </div>
+                            <div class="job-details">
+                                <div class="job-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Bangalore, India</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Contract</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-rupee-sign"></i>
+                                    <span>₹4,00,000 - ₹6,00,000</span>
+                                </div>
+                                <div class="job-detail">
+                                    <i class="fas fa-users"></i>
+                                    <span>1 position</span>
+                                </div>
+                            </div>
+                            <div class="job-description">
+                                Looking for a Mobile App Developer with experience in React Native or Flutter. This is a 6-month contract position...
+                            </div>
+                            <div class="job-footer">
+                                <div class="job-meta">
+                                    <span><i class="fas fa-calendar"></i> 1 week ago</span>
+                                    <span><i class="fas fa-eye"></i> 28 views</span>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="viewJob('J003')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="editJob('J003')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="promoteJob('J003')">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="crm-footer">
+        <div class="footer-content">
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
+            <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                <i class="fas fa-external-link-alt"></i> Official Website
+            </a></p>
+        </div>
+    </footer>
+
+    <script src="./script.js"></script>
+    <script src="./sidebar-toggle.js"></script>
+    <script src="./direct-actions.js"></script>
+    <script>
+        // Recruiter Jobs Page Functions
+        function searchJobs(searchTerm) {
+            console.log('Searching jobs:', searchTerm);
+            // Implementation for job search
+        }
+
+        function exportJobs() {
+            console.log('Exporting jobs data');
+            // Implementation for export
+            showDirectMessage('Job data exported successfully!', 'success');
+        }
+
+        function createJob() {
+            console.log('Creating new job');
+            // Implementation for creating job
+            showDirectMessage('Job created successfully!', 'success');
+        }
+
+        function viewJob(jobId) {
+            console.log('Viewing job details:', jobId);
+            // Implementation for viewing job details
+        }
+
+        function editJob(jobId) {
+            console.log('Editing job:', jobId);
+            // Implementation for editing job
+        }
+
+        function promoteJob(jobId) {
+            console.log('Promoting job:', jobId);
+            // Implementation for promoting job
+            showDirectMessage('Job promoted successfully!', 'success');
+        }
+
+        function bulkAction() {
+            console.log('Performing bulk action');
+            // Implementation for bulk action
+        }
+
+        function applyFilters() {
+            console.log('Applying filters');
+            // Implementation for applying filters
+        }
+
+        function clearFilters() {
+            console.log('Clearing filters');
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Workers - 12th FailJobs CRM | Powered by Yugayatra Retail</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./modal-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Recruiter Workers Styles */
+        .workers-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #004e92, #007bff, #004e92);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 78, 146, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #004e92, #007bff); }
+        .stat-icon.green { background: linear-gradient(135deg, #28a745, #20c997); }
+        .stat-icon.orange { background: linear-gradient(135deg, #fd7e14, #ffc107); }
+        .stat-icon.purple { background: linear-gradient(135deg, #6f42c1, #e83e8c); }
+
+        .stat-info h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .stat-info p {
+            font-size: 1rem;
+            color: #666;
+            margin: 0 0 10px 0;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .stat-change.negative {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .stat-change.neutral {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .filters-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filters-header h3 i {
+            color: #004e92;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px 15px;
+            border: 1px solid rgba(0, 78, 146, 0.2);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #004e92;
+            box-shadow: 0 0 0 3px rgba(0, 78, 146, 0.1);
+        }
+
+        .workers-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 78, 146, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .workers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 78, 146, 0.1);
+        }
+
+        .workers-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .workers-header h3 i {
+            color: #004e92;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 15px;
+        }
+
+        .workers-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .workers-table th {
+            background: rgba(0, 78, 146, 0.05);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid rgba(0, 78, 146, 0.1);
+        }
+
+        .workers-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 78, 146, 0.05);
+            vertical-align: middle;
+        }
+
+        .workers-table tr:hover {
+            background: rgba(0, 78, 146, 0.02);
+        }
+
+        .worker-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .worker-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(0, 78, 146, 0.2);
+        }
+
+        .worker-details h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .worker-details p {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .worker-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .worker-contact a {
+            font-size: 0.9rem;
+            color: #004e92;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .worker-contact a:hover {
+            color: #003366;
+            text-decoration: underline;
+        }
+
+        .category-tag {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-tag.carpentry { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+        .category-tag.electrical { background: rgba(23, 162, 184, 0.1); color: #17a2b8; }
+        .category-tag.plumbing { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+        .category-tag.painting { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+        .category-tag.masonry { background: rgba(108, 117, 125, 0.1); color: #6c757d; }
+        .category-tag.welding { background: rgba(255, 127, 80, 0.1); color: #ff7f50; }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rating i {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+
+        .rating i.far {
+            color: #ddd;
+        }
+
+        .rating small {
+            color: #666;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.available {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-badge.working {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-badge.on-leave {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .status-badge.suspended {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .worker-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        .btn-primary {
+            background: #004e92;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #003366;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #004e92;
+            color: #004e92;
+        }
+
+        .btn-outline:hover {
+            background: #004e92;
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid rgba(0, 78, 146, 0.2);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background: rgba(0, 78, 146, 0.05);
+            border-color: #004e92;
+        }
+
+        .pagination button.active {
+            background: #004e92;
+            color: white;
+            border-color: #004e92;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .workers-content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workers-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+
+            .worker-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <p style="font-weight: bold; color: #004e92; font-size: 12px; margin-bottom: 8px; text-align: center;">Product of Yuga Yatra retail</p>
+                <div class="logo">
+                    <img src="assets/logo.png" alt="12th FailJobs Logo">
+                    <h1>12th FailJobs</h1>
+                </div>
+                <p>CRM Portal</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="recruiter-dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-jobs.html">
+                            <i class="fas fa-briefcase"></i>
+                            <span>My Jobs</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="recruiter-workers.html">
+                            <i class="fas fa-users"></i>
+                            <span>Workers</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-requests.html">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Requests</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="recruiter-profile.html">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="login.html">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header glassmorphism">
+                <div class="header-left">
+                    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>My Workers</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar glassmorphism">
+                        <input type="text" placeholder="Search workers..." onkeyup="searchWorkers(this.value)">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary glassmorphism" onclick="exportWorkers()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button class="btn btn-primary glassmorphism" onclick="assignJob()">
+                            <i class="fas fa-briefcase"></i> Assign Job
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Workers Content -->
+            <main class="workers-content">
+                <!-- Statistics Cards -->
+                <div class="stats-grid glassmorphism">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>48</h3>
+                            <p>My Workers</p>
+                            <span class="stat-change positive">+6 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>32</h3>
+                            <p>Available</p>
+                            <span class="stat-change positive">+4 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>16</h3>
+                            <p>Working</p>
+                            <span class="stat-change neutral">+2 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>4.7</h3>
+                            <p>Avg Rating</p>
+                            <span class="stat-change positive">+0.3 this month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Section -->
+                <div class="filters-section glassmorphism">
+                    <div class="filters-header">
+                        <h3><i class="fas fa-filter"></i> Filter Workers</h3>
+                        <button class="btn btn-sm btn-outline" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </button>
+                    </div>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="statusFilter">Status</label>
+                            <select id="statusFilter" onchange="applyFilters()">
+                                <option value="">All Status</option>
+                                <option value="available">Available</option>
+                                <option value="working">Working</option>
+                                <option value="on-leave">On Leave</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="categoryFilter">Category</label>
+                            <select id="categoryFilter" onchange="applyFilters()">
+                                <option value="">All Categories</option>
+                                <option value="carpentry">Carpentry</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="painting">Painting</option>
+                                <option value="masonry">Masonry</option>
+                                <option value="welding">Welding</option>
+                                <option value="mechanical">Mechanical</option>
+                                <option value="cleaning">Cleaning</option>
+                                <option value="security">Security</option>
+                                <option value="delivery">Delivery</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="experienceFilter">Experience</label>
+                            <select id="experienceFilter" onchange="applyFilters()">
+                                <option value="">All Experience</option>
+                                <option value="0-1">0-1 years</option>
+                                <option value="1-3">1-3 years</option>
+                                <option value="3-5">3-5 years</option>
+                                <option value="5+">5+ years</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="ratingFilter">Rating</label>
+                            <select id="ratingFilter" onchange="applyFilters()">
+                                <option value="">All Ratings</option>
+                                <option value="5">5 Stars</option>
+                                <option value="4">4+ Stars</option>
+                                <option value="3">3+ Stars</option>
+                                <option value="2">2+ Stars</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workers Table -->
+                <div class="workers-section glassmorphism">
+                    <div class="workers-header">
+                        <h3><i class="fas fa-list"></i> My Workers</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-sm btn-success" onclick="contactAll()">
+                                <i class="fas fa-phone"></i> Contact All
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="workers-table">
+                            <thead>
+                                <tr>
+                                    <th>Worker ID</th>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Category</th>
+                                    <th>Experience</th>
+                                    <th>Rating</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workersTableBody">
+                                <tr>
+                                    <td><strong>W001</strong></td>
+                                    <td>
+                                        <div class="worker-info">
+                                            <img src="https://picsum.photos/seed/worker1/50/50.jpg" alt="Worker" class="worker-avatar">
+                                            <div class="worker-details">
+                                                <h4>Raj Kumar</h4>
+                                                <p>Carpenter • Age: 28</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="worker-contact">
+                                            <a href="tel:+919876543210">+91 98765 43210</a>
+                                            <a href="mailto:raj.kumar@email.com">raj.kumar@email.com</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="category-tag carpentry">Carpentry</span>
+                                    </td>
+                                    <td>4 years</td>
+                                    <td>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                            <small>(4.5)</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge available">Available</span>
+                                    </td>
+                                    <td>
+                                        <div class="worker-actions">
+                                            <button class="btn btn-sm btn-primary" onclick="viewWorker('W001')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-success" onclick="assignJob('W001')">
+                                                <i class="fas fa-briefcase"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" onclick="contactWorker('W001')">
+                                                <i class="fas fa-phone"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>W002</strong></td>
+                                    <td>
+                                        <div class="worker-info">
+                                            <img src="https://picsum.photos/seed/worker2/50/50.jpg" alt="Worker" class="worker-avatar">
+                                            <div class="worker-details">
+                                                <h4>Amit Singh</h4>
+                                                <p>Electrician • Age: 32</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="worker-contact">
+                                            <a href="tel:+919876543211">+91 98765 43211</a>
+                                            <a href="mailto:amit.singh@email.com">amit.singh@email.com</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="category-tag electrical">Electrical</span>
+                                    </td>
+                                    <td>6 years</td>
+                                    <td>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <small>(5.0)</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge working">Working</span>
+                                    </td>
+                                    <td>
+                                        <div class="worker-actions">
+                                            <button class="btn btn-sm btn-primary" onclick="viewWorker('W002')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-success" onclick="assignJob('W002')">
+                                                <i class="fas fa-briefcase"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" onclick="contactWorker('W002')">
+                                                <i class="fas fa-phone"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>W003</strong></td>
+                                    <td>
+                                        <div class="worker-info">
+                                            <img src="https://picsum.photos/seed/worker3/50/50.jpg" alt="Worker" class="worker-avatar">
+                                            <div class="worker-details">
+                                                <h4>Suresh Kumar</h4>
+                                                <p>Plumber • Age: 35</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="worker-contact">
+                                            <a href="tel:+919876543212">+91 98765 43212</a>
+                                            <a href="mailto:suresh.kumar@email.com">suresh.kumar@email.com</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="category-tag plumbing">Plumbing</span>
+                                    </td>
+                                    <td>8 years</td>
+                                    <td>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <small>(4.0)</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge available">Available</span>
+                                    </td>
+                                    <td>
+                                        <div class="worker-actions">
+                                            <button class="btn btn-sm btn-primary" onclick="viewWorker('W003')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-success" onclick="assignJob('W003')">
+                                                <i class="fas fa-briefcase"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" onclick="contactWorker('W003')">
+                                                <i class="fas fa-phone"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button onclick="previousPage()" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <button onclick="goToPage(1)" class="active">1</button>
+                    <button onclick="goToPage(2)">2</button>
+                    <button onclick="goToPage(3)">3</button>
+                    <button onclick="nextPage()" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </main>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="crm-footer">
+        <div class="footer-content">
+            <p>&copy; Product of Yuga Yatra retail © 2026 12th FailJobs CRM. All rights reserved.</p>
+            <p>Contact: <a href="mailto:contact@12th-failjobs.com">contact@12th-failjobs.com</a></p>
+            <p><a href="https://12th-failjobs.vercel.app/" target="_blank" class="official-website-link">
+                <i class="fas fa-external-link-alt"></i> Official Website
+            </a></p>
+        </div>
+    </footer>
+
+    <script src="./script.js"></script>
+    <script src="./sidebar-toggle.js"></script>
+    <script src="./direct-actions.js"></script>
+    <script>
+        // Recruiter Workers Page Functions
+        function searchWorkers(searchTerm) {
+            console.log('Searching workers:', searchTerm);
+            // Implementation for worker search
+        }
+
+        function exportWorkers() {
+            console.log('Exporting workers data');
+            // Implementation for export
+            showDirectMessage('Worker data exported successfully!', 'success');
+        }
+
+        function assignJob(workerId) {
+            console.log('Assigning job to worker:', workerId);
+            // Implementation for job assignment
+            showDirectMessage('Job assigned successfully!', 'success');
+        }
+
+        function viewWorker(workerId) {
+            console.log('Viewing worker details:', workerId);
+            // Implementation for viewing worker details
+        }
+
+        function contactWorker(workerId) {
+            console.log('Contacting worker:', workerId);
+            // Implementation for contacting worker
+        }
+
+        function contactAll() {
+            console.log('Contacting all workers');
+            // Implementation for contacting all workers
+            showDirectMessage('Message sent to all workers!', 'success');
+        }
+
+        function applyFilters() {
+            console.log('Applying filters');
+            // Implementation for applying filters
+        }
+
+        function clearFilters() {
+            console.log('Clearing filters');
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('experienceFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+        }
+
+        function previousPage() {
+            console.log('Going to previous page');
+            // Implementation for pagination
+        }
+
+        function nextPage() {
+            console.log('Going to next page');
+            // Implementation for pagination
+        }
+
+        function goToPage(page) {
+            console.log('Going to page:', page);
+            // Implementation for pagination
+        }
+    </script>
+</body>
+</html>
