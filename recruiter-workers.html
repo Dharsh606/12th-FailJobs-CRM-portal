@@ -883,42 +883,298 @@
     <script src="./direct-actions.js"></script>
     <script>
         // Recruiter Workers Page Functions
+        let allWorkers = [
+            { id: 'W001', name: 'Raj Kumar', category: 'Carpentry', experience: '4 years', rating: 4.5, status: 'available', contact: '+91 98765 43210', email: 'raj.kumar@email.com' },
+            { id: 'W002', name: 'Amit Singh', category: 'Electrical', experience: '6 years', rating: 5.0, status: 'working', contact: '+91 98765 43211', email: 'amit.singh@email.com' },
+            { id: 'W003', name: 'Suresh Kumar', category: 'Plumbing', experience: '8 years', rating: 4.0, status: 'available', contact: '+91 98765 43212', email: 'suresh.kumar@email.com' }
+        ];
+
         function searchWorkers(searchTerm) {
-            console.log('Searching workers:', searchTerm);
-            // Implementation for worker search
+            const searchLower = searchTerm.toLowerCase();
+            const workerRows = document.querySelectorAll('#workersTableBody tr');
+            
+            workerRows.forEach(row => {
+                const workerName = row.querySelector('h4').textContent.toLowerCase();
+                const workerCategory = row.querySelector('.category-tag').textContent.toLowerCase();
+                const workerId = row.querySelector('td strong').textContent.toLowerCase();
+                
+                if (workerName.includes(searchLower) || workerCategory.includes(searchLower) || workerId.includes(searchLower)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            showDirectMessage(`Found ${workerRows.length} workers matching "${searchTerm}"`, 'info');
         }
 
         function exportWorkers() {
-            console.log('Exporting workers data');
-            // Implementation for export
+            // Create CSV content
+            let csvContent = "Worker ID,Name,Category,Experience,Rating,Status,Contact,Email\n";
+            
+            allWorkers.forEach(worker => {
+                csvContent += `${worker.id},${worker.name},${worker.category},${worker.experience},${worker.rating},${worker.status},${worker.contact},${worker.email}\n`;
+            });
+            
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'my_workers.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
             showDirectMessage('Worker data exported successfully!', 'success');
         }
 
         function assignJob(workerId) {
-            console.log('Assigning job to worker:', workerId);
-            // Implementation for job assignment
-            showDirectMessage('Job assigned successfully!', 'success');
+            const worker = allWorkers.find(w => w.id === workerId);
+            if (worker && worker.status === 'available') {
+                // Create modal for job assignment
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Assign Job to ${worker.name}</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="jobTitle">Job Title</label>
+                                <input type="text" id="jobTitle" placeholder="Enter job title">
+                            </div>
+                            <div class="form-group">
+                                <label for="jobLocation">Location</label>
+                                <input type="text" id="jobLocation" placeholder="Enter job location">
+                            </div>
+                            <div class="form-group">
+                                <label for="jobDuration">Duration</label>
+                                <select id="jobDuration">
+                                    <option value="1 day">1 Day</option>
+                                    <option value="3 days">3 Days</option>
+                                    <option value="1 week">1 Week</option>
+                                    <option value="2 weeks">2 Weeks</option>
+                                    <option value="1 month">1 Month</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobPayment">Payment (₹)</label>
+                                <input type="number" id="jobPayment" placeholder="Enter payment amount">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="confirmJobAssignment('${workerId}')">Assign Job</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            } else {
+                showDirectMessage('Worker is not available for job assignment', 'error');
+            }
+        }
+
+        function confirmJobAssignment(workerId) {
+            const jobTitle = document.getElementById('jobTitle').value;
+            const jobLocation = document.getElementById('jobLocation').value;
+            const jobDuration = document.getElementById('jobDuration').value;
+            const jobPayment = document.getElementById('jobPayment').value;
+            
+            if (jobTitle && jobLocation && jobPayment) {
+                // Update worker status
+                const worker = allWorkers.find(w => w.id === workerId);
+                if (worker) {
+                    worker.status = 'working';
+                }
+                
+                closeModal();
+                showDirectMessage(`Job assigned successfully to ${worker.name}!`, 'success');
+                
+                // Update table
+                updateWorkerTable();
+            } else {
+                showDirectMessage('Please fill all required fields', 'error');
+            }
         }
 
         function viewWorker(workerId) {
-            console.log('Viewing worker details:', workerId);
-            // Implementation for viewing worker details
+            const worker = allWorkers.find(w => w.id === workerId);
+            if (worker) {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Worker Details</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="worker-detail-view">
+                                <div class="detail-item">
+                                    <strong>Worker ID:</strong> ${worker.id}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Name:</strong> ${worker.name}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Category:</strong> ${worker.category}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Experience:</strong> ${worker.experience}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Rating:</strong> ${worker.rating}/5.0
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Status:</strong> ${worker.status}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Contact:</strong> ${worker.contact}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Email:</strong> ${worker.email}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                            <button class="btn btn-primary" onclick="contactWorker('${workerId}')">Contact Worker</button>
+                            <button class="btn btn-success" onclick="assignJob('${workerId}')">Assign Job</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            }
         }
 
         function contactWorker(workerId) {
-            console.log('Contacting worker:', workerId);
-            // Implementation for contacting worker
+            const worker = allWorkers.find(w => w.id === workerId);
+            if (worker) {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Contact ${worker.name}</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="worker-contact-info">
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <a href="tel:${worker.contact}">${worker.contact}</a>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <a href="mailto:${worker.email}">${worker.email}</a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Quick Message</label>
+                                <textarea id="message" rows="4" placeholder="Type your message here..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="sendMessage('${workerId}')">Send Message</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            }
+        }
+
+        function sendMessage(workerId) {
+            const message = document.getElementById('message').value;
+            if (message.trim()) {
+                closeModal();
+                showDirectMessage('Message sent successfully!', 'success');
+            } else {
+                showDirectMessage('Please enter a message', 'error');
+            }
         }
 
         function contactAll() {
-            console.log('Contacting all workers');
-            // Implementation for contacting all workers
-            showDirectMessage('Message sent to all workers!', 'success');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Contact All Workers</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Send a message to all ${allWorkers.length} workers</p>
+                        <div class="form-group">
+                            <label for="allMessage">Message</label>
+                            <textarea id="allMessage" rows="4" placeholder="Type your message here..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="sendEmail"> Send via Email
+                            </label>
+                            <label>
+                                <input type="checkbox" id="sendSMS"> Send via SMS
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="sendToAll()">Send to All</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function sendToAll() {
+            const message = document.getElementById('allMessage').value;
+            const sendEmail = document.getElementById('sendEmail').checked;
+            const sendSMS = document.getElementById('sendSMS').checked;
+            
+            if (message.trim()) {
+                closeModal();
+                showDirectMessage(`Message sent to all ${allWorkers.length} workers!`, 'success');
+            } else {
+                showDirectMessage('Please enter a message', 'error');
+            }
         }
 
         function applyFilters() {
-            console.log('Applying filters');
-            // Implementation for applying filters
+            const status = document.getElementById('statusFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const experience = document.getElementById('experienceFilter').value;
+            const rating = document.getElementById('ratingFilter').value;
+            
+            const workerRows = document.querySelectorAll('#workersTableBody tr');
+            let filteredCount = 0;
+            
+            workerRows.forEach(row => {
+                let showRow = true;
+                
+                if (status && !row.querySelector('.status-badge').textContent.toLowerCase().includes(status)) {
+                    showRow = false;
+                }
+                
+                if (category && !row.querySelector('.category-tag').textContent.toLowerCase().includes(category)) {
+                    showRow = false;
+                }
+                
+                // Add more filter logic as needed
+                
+                row.style.display = showRow ? '' : 'none';
+                if (showRow) filteredCount++;
+            });
+            
+            showDirectMessage(`Found ${filteredCount} workers matching filters`, 'info');
         }
 
         function clearFilters() {
@@ -927,21 +1183,41 @@
             document.getElementById('categoryFilter').value = '';
             document.getElementById('experienceFilter').value = '';
             document.getElementById('ratingFilter').value = '';
+            
+            // Show all rows
+            const workerRows = document.querySelectorAll('#workersTableBody tr');
+            workerRows.forEach(row => {
+                row.style.display = '';
+            });
+            
+            showDirectMessage('Filters cleared', 'info');
+        }
+
+        function updateWorkerTable() {
+            // This would update the table with new worker data
+            console.log('Worker table updated');
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
         }
 
         function previousPage() {
             console.log('Going to previous page');
-            // Implementation for pagination
+            showDirectMessage('Previous page', 'info');
         }
 
         function nextPage() {
             console.log('Going to next page');
-            // Implementation for pagination
+            showDirectMessage('Next page', 'info');
         }
 
         function goToPage(page) {
             console.log('Going to page:', page);
-            // Implementation for pagination
+            showDirectMessage(`Page ${page}`, 'info');
         }
     </script>
 </body>

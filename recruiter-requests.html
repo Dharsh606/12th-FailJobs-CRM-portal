@@ -777,68 +777,542 @@
     <script src="./direct-actions.js"></script>
     <script>
         // Recruiter Requests Page Functions
+        let allRequests = [
+            { id: 'R001', title: 'Need 5 Carpenters for Project', client: 'ABC Construction Co.', type: 'Job Request', priority: 'High', location: 'Delhi, India', status: 'pending', posted: '2 days ago', contact: 'John Smith' },
+            { id: 'R002', title: 'Looking for Electricians', client: 'Tech Solutions Pvt Ltd', type: 'Job Request', priority: 'Medium', location: 'Mumbai, India', status: 'approved', posted: '5 days ago', contact: 'Sarah Johnson' },
+            { id: 'R003', title: 'Emergency Plumbing Work', client: 'Residential Client', type: 'Other Request', priority: 'High', location: 'Bangalore, India', status: 'pending', posted: '1 hour ago', contact: 'Mike Wilson' }
+        ];
+
         function searchRequests(searchTerm) {
-            console.log('Searching requests:', searchTerm);
-            // Implementation for request search
+            const searchLower = searchTerm.toLowerCase();
+            const requestCards = document.querySelectorAll('.request-card');
+            
+            requestCards.forEach(card => {
+                const requestTitle = card.querySelector('.request-title').textContent.toLowerCase();
+                const requestClient = card.querySelector('.request-client').textContent.toLowerCase();
+                const requestId = card.querySelector('.request-id')?.textContent.toLowerCase() || '';
+                
+                if (requestTitle.includes(searchLower) || requestClient.includes(searchLower) || requestId.includes(searchLower)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            const visibleCards = Array.from(requestCards).filter(card => card.style.display !== 'none');
+            showDirectMessage(`Found ${visibleCards.length} requests matching "${searchTerm}"`, 'info');
         }
 
         function exportRequests() {
-            console.log('Exporting requests data');
-            // Implementation for export
+            // Create CSV content
+            let csvContent = "Request ID,Title,Client,Type,Priority,Location,Status,Posted,Contact\n";
+            
+            allRequests.forEach(request => {
+                csvContent += `${request.id},${request.title},${request.client},${request.type},${request.priority},${request.location},${request.status},${request.posted},${request.contact}\n`;
+            });
+            
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'my_requests.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
             showDirectMessage('Request data exported successfully!', 'success');
         }
 
         function createRequest() {
-            console.log('Creating new request');
-            // Implementation for creating request
-            showDirectMessage('Request created successfully!', 'success');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Create New Request</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="requestTitle">Request Title</label>
+                            <input type="text" id="requestTitle" placeholder="Enter request title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="requestClient">Client Name</label>
+                            <input type="text" id="requestClient" placeholder="Enter client name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="requestType">Request Type</label>
+                            <select id="requestType" required>
+                                <option value="">Select request type</option>
+                                <option value="Job Request">Job Request</option>
+                                <option value="Worker Request">Worker Request</option>
+                                <option value="Client Request">Client Request</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="requestPriority">Priority</label>
+                            <select id="requestPriority" required>
+                                <option value="">Select priority</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="requestLocation">Location</label>
+                            <input type="text" id="requestLocation" placeholder="Enter location" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="requestDescription">Description</label>
+                            <textarea id="requestDescription" rows="4" placeholder="Enter request description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="requestContact">Contact Person</label>
+                            <input type="text" id="requestContact" placeholder="Enter contact person name" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="confirmCreateRequest()">Create Request</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmCreateRequest() {
+            const requestTitle = document.getElementById('requestTitle').value;
+            const requestClient = document.getElementById('requestClient').value;
+            const requestType = document.getElementById('requestType').value;
+            const requestPriority = document.getElementById('requestPriority').value;
+            const requestLocation = document.getElementById('requestLocation').value;
+            const requestDescription = document.getElementById('requestDescription').value;
+            const requestContact = document.getElementById('requestContact').value;
+            
+            if (requestTitle && requestClient && requestType && requestPriority && requestLocation && requestDescription && requestContact) {
+                // Add new request to array
+                const newRequest = {
+                    id: 'R' + String(allRequests.length + 1).padStart(3, '0'),
+                    title: requestTitle,
+                    client: requestClient,
+                    type: requestType,
+                    priority: requestPriority,
+                    location: requestLocation,
+                    status: 'pending',
+                    posted: 'Just now',
+                    contact: requestContact
+                };
+                
+                allRequests.push(newRequest);
+                closeModal();
+                showDirectMessage('Request created successfully!', 'success');
+                
+                // Refresh request grid (in real implementation)
+                console.log('Request created:', newRequest);
+            } else {
+                showDirectMessage('Please fill all required fields', 'error');
+            }
         }
 
         function viewRequest(requestId) {
-            console.log('Viewing request details:', requestId);
-            // Implementation for viewing request details
+            const request = allRequests.find(r => r.id === requestId);
+            if (request) {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Request Details</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="request-detail-view">
+                                <div class="detail-item">
+                                    <strong>Request ID:</strong> ${request.id}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Title:</strong> ${request.title}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Client:</strong> ${request.client}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Type:</strong> ${request.type}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Priority:</strong> ${request.priority}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Location:</strong> ${request.location}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Status:</strong> ${request.status}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Posted:</strong> ${request.posted}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Contact:</strong> ${request.contact}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                            <button class="btn btn-success" onclick="approveRequest('${requestId}')">Approve</button>
+                            <button class="btn btn-warning" onclick="editRequest('${requestId}')">Edit</button>
+                            <button class="btn btn-danger" onclick="rejectRequest('${requestId}')">Reject</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            }
         }
 
         function approveRequest(requestId) {
-            console.log('Approving request:', requestId);
-            // Implementation for approving request
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Approve Request</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to approve this request?</p>
+                        <div class="form-group">
+                            <label for="approvalNotes">Approval Notes</label>
+                            <textarea id="approvalNotes" rows="3" placeholder="Add any notes for this approval..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignedTo">Assign To</label>
+                            <select id="assignedTo">
+                                <option value="">Select person</option>
+                                <option value="self">Myself</option>
+                                <option value="team">Team Member</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="confirmApproval('${requestId}')">Approve Request</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmApproval(requestId) {
+            const approvalNotes = document.getElementById('approvalNotes').value;
+            const assignedTo = document.getElementById('assignedTo').value;
+            
+            // Update request status
+            const request = allRequests.find(r => r.id === requestId);
+            if (request) {
+                request.status = 'approved';
+            }
+            
+            closeModal();
             showDirectMessage('Request approved successfully!', 'success');
         }
 
         function rejectRequest(requestId) {
-            console.log('Rejecting request:', requestId);
-            // Implementation for rejecting request
-            showDirectMessage('Request rejected!', 'info');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Reject Request</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to reject this request?</p>
+                        <div class="form-group">
+                            <label for="rejectionReason">Rejection Reason</label>
+                            <select id="rejectionReason" required>
+                                <option value="">Select reason</option>
+                                <option value="insufficient_info">Insufficient Information</option>
+                                <option value="budget_constraints">Budget Constraints</option>
+                                <option value="timeline_issues">Timeline Issues</option>
+                                <option value="resource_unavailable">Resources Unavailable</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rejectionNotes">Additional Notes</label>
+                            <textarea id="rejectionNotes" rows="3" placeholder="Provide additional details..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-danger" onclick="confirmRejection('${requestId}')">Reject Request</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmRejection(requestId) {
+            const rejectionReason = document.getElementById('rejectionReason').value;
+            const rejectionNotes = document.getElementById('rejectionNotes').value;
+            
+            if (rejectionReason) {
+                // Update request status
+                const request = allRequests.find(r => r.id === requestId);
+                if (request) {
+                    request.status = 'rejected';
+                }
+                
+                closeModal();
+                showDirectMessage('Request rejected!', 'info');
+            } else {
+                showDirectMessage('Please select a rejection reason', 'error');
+            }
         }
 
         function editRequest(requestId) {
-            console.log('Editing request:', requestId);
-            // Implementation for editing request
+            const request = allRequests.find(r => r.id === requestId);
+            if (request) {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Request</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="editRequestTitle">Request Title</label>
+                                <input type="text" id="editRequestTitle" value="${request.title}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editRequestClient">Client Name</label>
+                                <input type="text" id="editRequestClient" value="${request.client}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editRequestType">Request Type</label>
+                                <select id="editRequestType" required>
+                                    <option value="Job Request" ${request.type === 'Job Request' ? 'selected' : ''}>Job Request</option>
+                                    <option value="Worker Request" ${request.type === 'Worker Request' ? 'selected' : ''}>Worker Request</option>
+                                    <option value="Client Request" ${request.type === 'Client Request' ? 'selected' : ''}>Client Request</option>
+                                    <option value="Other" ${request.type === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editRequestPriority">Priority</label>
+                                <select id="editRequestPriority" required>
+                                    <option value="High" ${request.priority === 'High' ? 'selected' : ''}>High</option>
+                                    <option value="Medium" ${request.priority === 'Medium' ? 'selected' : ''}>Medium</option>
+                                    <option value="Low" ${request.priority === 'Low' ? 'selected' : ''}>Low</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editRequestLocation">Location</label>
+                                <input type="text" id="editRequestLocation" value="${request.location}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editRequestContact">Contact Person</label>
+                                <input type="text" id="editRequestContact" value="${request.contact}" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="confirmEditRequest('${requestId}')">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            }
+        }
+
+        function confirmEditRequest(requestId) {
+            const requestTitle = document.getElementById('editRequestTitle').value;
+            const requestClient = document.getElementById('editRequestClient').value;
+            const requestType = document.getElementById('editRequestType').value;
+            const requestPriority = document.getElementById('editRequestPriority').value;
+            const requestLocation = document.getElementById('editRequestLocation').value;
+            const requestContact = document.getElementById('editRequestContact').value;
+            
+            if (requestTitle && requestClient && requestType && requestPriority && requestLocation && requestContact) {
+                // Update request in array
+                const request = allRequests.find(r => r.id === requestId);
+                if (request) {
+                    request.title = requestTitle;
+                    request.client = requestClient;
+                    request.type = requestType;
+                    request.priority = requestPriority;
+                    request.location = requestLocation;
+                    request.contact = requestContact;
+                }
+                
+                closeModal();
+                showDirectMessage('Request updated successfully!', 'success');
+            } else {
+                showDirectMessage('Please fill all required fields', 'error');
+            }
         }
 
         function assignWorkers(requestId) {
-            console.log('Assigning workers to request:', requestId);
-            // Implementation for assigning workers
-            showDirectMessage('Workers assigned successfully!', 'success');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Assign Workers</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Select workers to assign to this request:</p>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="worker1"> Raj Kumar (Carpenter) - Available
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="worker2"> Amit Singh (Electrician) - Working
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="worker3"> Suresh Kumar (Plumber) - Available
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignmentNotes">Assignment Notes</label>
+                            <textarea id="assignmentNotes" rows="3" placeholder="Add any assignment notes..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="confirmAssignment('${requestId}')">Assign Workers</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmAssignment(requestId) {
+            const worker1 = document.getElementById('worker1').checked;
+            const worker2 = document.getElementById('worker2').checked;
+            const worker3 = document.getElementById('worker3').checked;
+            const assignmentNotes = document.getElementById('assignmentNotes').value;
+            
+            if (worker1 || worker2 || worker3) {
+                closeModal();
+                showDirectMessage('Workers assigned successfully!', 'success');
+            } else {
+                showDirectMessage('Please select at least one worker', 'error');
+            }
         }
 
         function bulkApprove() {
-            console.log('Bulk approving requests');
-            // Implementation for bulk approve
-            showDirectMessage('Requests approved successfully!', 'success');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Bulk Approve Requests</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Approve all pending requests?</p>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="confirmBulkApprove"> I confirm I want to approve all pending requests
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="bulkApprovalNotes">Bulk Approval Notes</label>
+                            <textarea id="bulkApprovalNotes" rows="3" placeholder="Add notes for bulk approval..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-success" onclick="confirmBulkApprove()">Approve All</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmBulkApprove() {
+            const confirmBulkApprove = document.getElementById('confirmBulkApprove').checked;
+            const bulkApprovalNotes = document.getElementById('bulkApprovalNotes').value;
+            
+            if (confirmBulkApprove) {
+                // Update all pending requests to approved
+                allRequests.forEach(request => {
+                    if (request.status === 'pending') {
+                        request.status = 'approved';
+                    }
+                });
+                
+                closeModal();
+                showDirectMessage('All pending requests approved!', 'success');
+            } else {
+                showDirectMessage('Please confirm the bulk approval', 'error');
+            }
         }
 
         function applyFilters() {
-            console.log('Applying filters');
-            // Implementation for applying filters
+            const status = document.getElementById('statusFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            
+            const requestCards = document.querySelectorAll('.request-card');
+            let filteredCount = 0;
+            
+            requestCards.forEach(card => {
+                let showCard = true;
+                
+                if (status && !card.querySelector('.request-status').textContent.toLowerCase().includes(status)) {
+                    showCard = false;
+                }
+                
+                if (priority && !card.textContent.includes(priority)) {
+                    showCard = false;
+                }
+                
+                card.style.display = showCard ? '' : 'none';
+                if (showCard) filteredCount++;
+            });
+            
+            showDirectMessage(`Found ${filteredCount} requests matching filters`, 'info');
         }
 
         function clearFilters() {
-            console.log('Clearing filters');
             document.getElementById('statusFilter').value = '';
             document.getElementById('typeFilter').value = '';
             document.getElementById('priorityFilter').value = '';
             document.getElementById('dateFilter').value = '';
+            
+            // Show all request cards
+            const requestCards = document.querySelectorAll('.request-card');
+            requestCards.forEach(card => {
+                card.style.display = '';
+            });
+            
+            showDirectMessage('Filters cleared', 'info');
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
         }
     </script>
 </body>

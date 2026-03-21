@@ -1320,55 +1320,432 @@
         function bulkActivate() {
             const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
             if (selectedCheckboxes.length === 0) {
-                alert('Please select at least one worker to activate');
+                showDirectMessage('Please select at least one worker to activate', 'error');
                 return;
             }
             
-            if (confirm(`Are you sure you want to activate ${selectedCheckboxes.length} workers?`)) {
-                console.log('Bulk activating workers');
-                // Implementation for bulk activate
-            }
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Bulk Activate Workers</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to activate ${selectedCheckboxes.length} workers?</p>
+                        <div class="form-group">
+                            <label for="bulkActivateNotes">Activation Notes</label>
+                            <textarea id="bulkActivateNotes" rows="3" placeholder="Add notes for bulk activation..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-success" onclick="confirmBulkActivate()">Activate Workers</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmBulkActivate() {
+            const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
+            const bulkActivateNotes = document.getElementById('bulkActivateNotes').value;
+            
+            closeModal();
+            showDirectMessage(`${selectedCheckboxes.length} workers activated successfully!`, 'success');
+            console.log('Bulk activated workers:', selectedCheckboxes.length, 'Notes:', bulkActivateNotes);
         }
 
         function bulkSuspend() {
             const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
             if (selectedCheckboxes.length === 0) {
-                alert('Please select at least one worker to suspend');
+                showDirectMessage('Please select at least one worker to suspend', 'error');
                 return;
             }
             
-            if (confirm(`Are you sure you want to suspend ${selectedCheckboxes.length} workers?`)) {
-                console.log('Bulk suspending workers');
-                // Implementation for bulk suspend
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Bulk Suspend Workers</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to suspend ${selectedCheckboxes.length} workers?</p>
+                        <div class="form-group">
+                            <label for="suspendReason">Suspension Reason</label>
+                            <select id="suspendReason" required>
+                                <option value="">Select reason</option>
+                                <option value="performance">Performance Issues</option>
+                                <option value="conduct">Conduct Issues</option>
+                                <option value="complaint">Client Complaint</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspendNotes">Additional Notes</label>
+                            <textarea id="suspendNotes" rows="3" placeholder="Add additional notes..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-warning" onclick="confirmBulkSuspend()">Suspend Workers</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmBulkSuspend() {
+            const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
+            const suspendReason = document.getElementById('suspendReason').value;
+            const suspendNotes = document.getElementById('suspendNotes').value;
+            
+            if (suspendReason) {
+                closeModal();
+                showDirectMessage(`${selectedCheckboxes.length} workers suspended successfully!`, 'success');
+                console.log('Bulk suspended workers:', selectedCheckboxes.length, 'Reason:', suspendReason, 'Notes:', suspendNotes);
+            } else {
+                showDirectMessage('Please select a suspension reason', 'error');
             }
         }
 
         function bulkDelete() {
             const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
             if (selectedCheckboxes.length === 0) {
-                alert('Please select at least one worker to delete');
+                showDirectMessage('Please select at least one worker to delete', 'error');
                 return;
             }
             
-            if (confirm(`Are you sure you want to delete ${selectedCheckboxes.length} workers? This action cannot be undone.`)) {
-                console.log('Bulk deleting workers');
-                // Implementation for bulk delete
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Bulk Delete Workers</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>⚠️ WARNING: This will permanently delete ${selectedCheckboxes.length} workers. This action cannot be undone.</p>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="confirmBulkDelete"> I understand this action is permanent and irreversible
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="bulkDeleteReason">Reason for deletion</label>
+                            <textarea id="bulkDeleteReason" rows="3" placeholder="Enter reason for bulk deletion..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-danger" onclick="confirmBulkDelete()">Delete Workers</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmBulkDelete() {
+            const selectedCheckboxes = document.querySelectorAll('.worker-checkbox:checked');
+            const confirmBulkDelete = document.getElementById('confirmBulkDelete').checked;
+            const bulkDeleteReason = document.getElementById('bulkDeleteReason').value;
+            
+            if (confirmBulkDelete) {
+                closeModal();
+                showDirectMessage(`${selectedCheckboxes.length} workers deleted permanently!`, 'success');
+                console.log('Bulk deleted workers:', selectedCheckboxes.length, 'Reason:', bulkDeleteReason);
+            } else {
+                showDirectMessage('Please confirm the permanent deletion', 'error');
+            }
+        }
+
+        function deleteWorker(workerId) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Delete Worker</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete worker ${workerId}? This action cannot be undone.</p>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="confirmDelete"> I understand this action is permanent
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="deleteReason">Reason for deletion</label>
+                            <textarea id="deleteReason" rows="3" placeholder="Enter reason..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-danger" onclick="confirmDelete('${workerId}')">Delete Worker</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmDelete(workerId) {
+            const confirmDelete = document.getElementById('confirmDelete').checked;
+            const deleteReason = document.getElementById('deleteReason').value;
+            
+            if (confirmDelete) {
+                closeModal();
+                showDirectMessage('Worker deleted successfully!', 'success');
+                console.log('Worker deleted:', workerId, 'Reason:', deleteReason);
+            } else {
+                showDirectMessage('Please confirm the deletion', 'error');
             }
         }
 
         function viewWorker(workerId) {
-            console.log('Viewing worker:', workerId);
-            // Implementation for view worker modal
+            // Find worker data (in real implementation, this would come from database)
+            const workerData = {
+                'W001': { name: 'Raj Kumar', category: 'Carpentry', experience: '4 years', rating: 4.5, status: 'available', contact: '+91 98765 43210', email: 'raj.kumar@email.com', age: 28, joined: '2023-01-15', totalJobs: 45, earnings: '₹2,45,000' },
+                'W002': { name: 'Amit Singh', category: 'Electrical', experience: '6 years', rating: 5.0, status: 'working', contact: '+91 98765 43211', email: 'amit.singh@email.com', age: 32, joined: '2022-06-20', totalJobs: 67, earnings: '₹4,12,000' }
+            };
+            
+            const worker = workerData[workerId];
+            if (worker) {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Worker Details</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="worker-detail-view">
+                                <div class="detail-item">
+                                    <strong>Worker ID:</strong> ${workerId}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Name:</strong> ${worker.name}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Category:</strong> ${worker.category}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Experience:</strong> ${worker.experience}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Rating:</strong> ${worker.rating}/5.0
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Status:</strong> ${worker.status}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Contact:</strong> ${worker.contact}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Email:</strong> ${worker.email}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Age:</strong> ${worker.age}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Joined:</strong> ${worker.joined}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Total Jobs:</strong> ${worker.totalJobs}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Total Earnings:</strong> ${worker.earnings}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                            <button class="btn btn-warning" onclick="editWorker('${workerId}')">Edit Worker</button>
+                            <button class="btn btn-success" onclick="assignJob('${workerId}')">Assign Job</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            }
         }
 
         function editWorker(workerId) {
-            console.log('Editing worker:', workerId);
-            // Implementation for edit worker modal
+            // Find worker data
+            const workerData = {
+                'W001': { name: 'Raj Kumar', category: 'Carpentry', experience: 4, status: 'available', contact: '+91 98765 43210', email: 'raj.kumar@email.com', age: 28 },
+                'W002': { name: 'Amit Singh', category: 'Electrical', experience: 6, status: 'working', contact: '+91 98765 43211', email: 'amit.singh@email.com', age: 32 }
+            };
+            
+            const worker = workerData[workerId];
+            if (worker) {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Worker</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="editWorkerName">Worker Name</label>
+                                <input type="text" id="editWorkerName" value="${worker.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editWorkerCategory">Category</label>
+                                <select id="editWorkerCategory" required>
+                                    <option value="Carpentry" ${worker.category === 'Carpentry' ? 'selected' : ''}>Carpentry</option>
+                                    <option value="Electrical" ${worker.category === 'Electrical' ? 'selected' : ''}>Electrical</option>
+                                    <option value="Plumbing" ${worker.category === 'Plumbing' ? 'selected' : ''}>Plumbing</option>
+                                    <option value="Painting" ${worker.category === 'Painting' ? 'selected' : ''}>Painting</option>
+                                    <option value="Masonry" ${worker.category === 'Masonry' ? 'selected' : ''}>Masonry</option>
+                                    <option value="Welding" ${worker.category === 'Welding' ? 'selected' : ''}>Welding</option>
+                                    <option value="Mechanical" ${worker.category === 'Mechanical' ? 'selected' : ''}>Mechanical</option>
+                                    <option value="Cleaning" ${worker.category === 'Cleaning' ? 'selected' : ''}>Cleaning</option>
+                                    <option value="Security" ${worker.category === 'Security' ? 'selected' : ''}>Security</option>
+                                    <option value="Delivery" ${worker.category === 'Delivery' ? 'selected' : ''}>Delivery</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editWorkerExperience">Experience (years)</label>
+                                <input type="number" id="editWorkerExperience" value="${worker.experience}" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editWorkerAge">Age</label>
+                                <input type="number" id="editWorkerAge" value="${worker.age}" min="18" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editWorkerContact">Contact Number</label>
+                                <input type="tel" id="editWorkerContact" value="${worker.contact}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editWorkerEmail">Email</label>
+                                <input type="email" id="editWorkerEmail" value="${worker.email}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editWorkerStatus">Status</label>
+                                <select id="editWorkerStatus" required>
+                                    <option value="available" ${worker.status === 'available' ? 'selected' : ''}>Available</option>
+                                    <option value="working" ${worker.status === 'working' ? 'selected' : ''}>Working</option>
+                                    <option value="on-leave" ${worker.status === 'on-leave' ? 'selected' : ''}>On Leave</option>
+                                    <option value="suspended" ${worker.status === 'suspended' ? 'selected' : ''}>Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="confirmEditWorker('${workerId}')">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            }
+        }
+
+        function confirmEditWorker(workerId) {
+            const workerName = document.getElementById('editWorkerName').value;
+            const workerCategory = document.getElementById('editWorkerCategory').value;
+            const workerExperience = document.getElementById('editWorkerExperience').value;
+            const workerAge = document.getElementById('editWorkerAge').value;
+            const workerContact = document.getElementById('editWorkerContact').value;
+            const workerEmail = document.getElementById('editWorkerEmail').value;
+            const workerStatus = document.getElementById('editWorkerStatus').value;
+            
+            if (workerName && workerCategory && workerExperience && workerAge && workerContact && workerEmail && workerStatus) {
+                closeModal();
+                showDirectMessage('Worker updated successfully!', 'success');
+                console.log('Worker updated:', { workerId, workerName, workerCategory, workerExperience, workerAge, workerContact, workerEmail, workerStatus });
+            } else {
+                showDirectMessage('Please fill all required fields', 'error');
+            }
         }
 
         function assignJob(workerId) {
-            console.log('Assigning job to worker:', workerId);
-            // Implementation for assign job modal
+            const workerData = {
+                'W001': { name: 'Raj Kumar', status: 'available' },
+                'W002': { name: 'Amit Singh', status: 'working' }
+            };
+            
+            const worker = workerData[workerId];
+            if (worker && worker.status === 'available') {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Assign Job to ${worker.name}</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="jobTitle">Job Title</label>
+                                <input type="text" id="jobTitle" placeholder="Enter job title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobLocation">Location</label>
+                                <input type="text" id="jobLocation" placeholder="Enter job location" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobDuration">Duration</label>
+                                <select id="jobDuration" required>
+                                    <option value="1 day">1 Day</option>
+                                    <option value="3 days">3 Days</option>
+                                    <option value="1 week">1 Week</option>
+                                    <option value="2 weeks">2 Weeks</option>
+                                    <option value="1 month">1 Month</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobPayment">Payment (₹)</label>
+                                <input type="number" id="jobPayment" placeholder="Enter payment amount" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobClient">Client Name</label>
+                                <input type="text" id="jobClient" placeholder="Enter client name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobDescription">Job Description</label>
+                                <textarea id="jobDescription" rows="3" placeholder="Enter job description"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="confirmJobAssignment('${workerId}')">Assign Job</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            } else {
+                showDirectMessage('Worker is not available for job assignment', 'error');
+            }
+        }
+
+        function confirmJobAssignment(workerId) {
+            const jobTitle = document.getElementById('jobTitle').value;
+            const jobLocation = document.getElementById('jobLocation').value;
+            const jobDuration = document.getElementById('jobDuration').value;
+            const jobPayment = document.getElementById('jobPayment').value;
+            const jobClient = document.getElementById('jobClient').value;
+            const jobDescription = document.getElementById('jobDescription').value;
+            
+            if (jobTitle && jobLocation && jobPayment && jobClient) {
+                closeModal();
+                showDirectMessage(`Job assigned successfully to worker ${workerId}!`, 'success');
+                console.log('Job assigned:', { workerId, jobTitle, jobLocation, jobDuration, jobPayment, jobClient, jobDescription });
+            } else {
+                showDirectMessage('Please fill all required fields', 'error');
+            }
         }
 
         function deleteWorker(workerId) {
@@ -1379,18 +1756,196 @@
         }
 
         function previousPage() {
-            console.log('Going to previous page');
-            // Implementation for pagination
+            showDirectMessage('Previous page', 'info');
         }
 
         function nextPage() {
-            console.log('Going to next page');
-            // Implementation for pagination
+            showDirectMessage('Next page', 'info');
         }
 
         function goToPage(page) {
-            console.log('Going to page:', page);
-            // Implementation for pagination
+            showDirectMessage(`Page ${page}`, 'info');
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const experience = document.getElementById('experienceFilter').value;
+            const rating = document.getElementById('ratingFilter').value;
+            
+            const workerRows = document.querySelectorAll('#workersTableBody tr');
+            let filteredCount = 0;
+            
+            workerRows.forEach(row => {
+                let showRow = true;
+                
+                if (status && !row.querySelector('.status-badge').textContent.toLowerCase().includes(status)) {
+                    showRow = false;
+                }
+                
+                if (category && !row.querySelector('.category-tag').textContent.toLowerCase().includes(category)) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+                if (showRow) filteredCount++;
+            });
+            
+            showDirectMessage(`Found ${filteredCount} workers matching filters`, 'info');
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('experienceFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            
+            // Show all rows
+            const workerRows = document.querySelectorAll('#workersTableBody tr');
+            workerRows.forEach(row => {
+                row.style.display = '';
+            });
+            
+            showDirectMessage('Filters cleared', 'info');
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function searchWorkers(searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            const workerRows = document.querySelectorAll('#workersTableBody tr');
+            
+            workerRows.forEach(row => {
+                const workerName = row.querySelector('h4').textContent.toLowerCase();
+                const workerCategory = row.querySelector('.category-tag').textContent.toLowerCase();
+                const workerId = row.querySelector('td strong').textContent.toLowerCase();
+                
+                if (workerName.includes(searchLower) || workerCategory.includes(searchLower) || workerId.includes(searchLower)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            const visibleRows = Array.from(workerRows).filter(row => row.style.display !== 'none');
+            showDirectMessage(`Found ${visibleRows.length} workers matching "${searchTerm}"`, 'info');
+        }
+
+        function exportWorkers() {
+            // Create CSV content with admin-level data
+            let csvContent = "Worker ID,Name,Category,Experience,Rating,Status,Contact,Email,Age,Joined,Total Jobs,Earnings\n";
+            
+            // Sample data for export
+            const workersData = [
+                { id: 'W001', name: 'Raj Kumar', category: 'Carpentry', experience: '4 years', rating: 4.5, status: 'available', contact: '+91 98765 43210', email: 'raj.kumar@email.com', age: 28, joined: '2023-01-15', totalJobs: 45, earnings: '₹2,45,000' },
+                { id: 'W002', name: 'Amit Singh', category: 'Electrical', experience: '6 years', rating: 5.0, status: 'working', contact: '+91 98765 43211', email: 'amit.singh@email.com', age: 32, joined: '2022-06-20', totalJobs: 67, earnings: '₹4,12,000' }
+            ];
+            
+            workersData.forEach(worker => {
+                csvContent += `${worker.id},${worker.name},${worker.category},${worker.experience},${worker.rating},${worker.status},${worker.contact},${worker.email},${worker.age},${worker.joined},${worker.totalJobs},${worker.earnings}\n`;
+            });
+            
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'admin_workers_data.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showDirectMessage('Admin worker data exported successfully!', 'success');
+        }
+
+        function addWorker() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add New Worker</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="workerName">Worker Name</label>
+                            <input type="text" id="workerName" placeholder="Enter worker name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="workerCategory">Category</label>
+                            <select id="workerCategory" required>
+                                <option value="">Select category</option>
+                                <option value="Carpentry">Carpentry</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Plumbing">Plumbing</option>
+                                <option value="Painting">Painting</option>
+                                <option value="Masonry">Masonry</option>
+                                <option value="Welding">Welding</option>
+                                <option value="Mechanical">Mechanical</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Security">Security</option>
+                                <option value="Delivery">Delivery</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="workerExperience">Experience (years)</label>
+                            <input type="number" id="workerExperience" min="0" placeholder="Enter experience" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="workerAge">Age</label>
+                            <input type="number" id="workerAge" min="18" placeholder="Enter age" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="workerContact">Contact Number</label>
+                            <input type="tel" id="workerContact" placeholder="Enter contact number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="workerEmail">Email</label>
+                            <input type="email" id="workerEmail" placeholder="Enter email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="workerStatus">Status</label>
+                            <select id="workerStatus" required>
+                                <option value="available">Available</option>
+                                <option value="working">Working</option>
+                                <option value="on-leave">On Leave</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="confirmAddWorker()">Add Worker</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmAddWorker() {
+            const workerName = document.getElementById('workerName').value;
+            const workerCategory = document.getElementById('workerCategory').value;
+            const workerExperience = document.getElementById('workerExperience').value;
+            const workerAge = document.getElementById('workerAge').value;
+            const workerContact = document.getElementById('workerContact').value;
+            const workerEmail = document.getElementById('workerEmail').value;
+            const workerStatus = document.getElementById('workerStatus').value;
+            
+            if (workerName && workerCategory && workerExperience && workerAge && workerContact && workerEmail && workerStatus) {
+                closeModal();
+                showDirectMessage('Worker added successfully!', 'success');
+                console.log('Worker added:', { workerName, workerCategory, workerExperience, workerAge, workerContact, workerEmail, workerStatus });
+            } else {
+                showDirectMessage('Please fill all required fields', 'error');
+            }
         }
 
         // Role-based access control

@@ -1078,13 +1078,53 @@
 
         // Requests management functions
         function searchRequests(searchTerm) {
-            console.log('Searching requests:', searchTerm);
-            // Implementation for search functionality
+            const searchLower = searchTerm.toLowerCase();
+            const requestRows = document.querySelectorAll('#requestsTableBody tr');
+            
+            requestRows.forEach(row => {
+                const requestTitle = row.querySelector('h4').textContent.toLowerCase();
+                const requestWorker = row.querySelector('.request-details p').textContent.toLowerCase();
+                const requestId = row.querySelector('td strong').textContent.toLowerCase();
+                
+                if (requestTitle.includes(searchLower) || requestWorker.includes(searchLower) || requestId.includes(searchLower)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            const visibleRows = Array.from(requestRows).filter(row => row.style.display !== 'none');
+            showDirectMessage(`Found ${visibleRows.length} requests matching "${searchTerm}"`, 'info');
         }
 
         function exportRequests() {
-            console.log('Exporting requests data');
-            // Implementation for export functionality
+            // Create CSV content with admin-level data
+            let csvContent = "Request ID,Worker Name,Worker ID,Category,Description,Priority,Status,Date\n";
+            
+            // Sample data for export
+            const requestsData = [
+                { id: 'REQ001', workerName: 'Raj Kumar', workerId: 'W001', category: 'Job Request', description: 'Looking for carpentry work', priority: 'High', status: 'Pending', date: '2024-03-15' },
+                { id: 'REQ002', workerName: 'Amit Singh', workerId: 'W002', category: 'Leave Request', description: 'Request for 3 days leave', priority: 'Medium', status: 'Approved', date: '2024-03-16' },
+                { id: 'REQ003', workerName: 'Suresh Kumar', workerId: 'W003', category: 'Equipment Request', description: 'Need new tools', priority: 'Low', status: 'Pending', date: '2024-03-17' },
+                { id: 'REQ004', workerName: 'Mahesh Kumar', workerId: 'W004', category: 'Leave Request', description: 'Request for 5 days leave', priority: 'Medium', status: 'Approved', date: '2024-03-17' }
+            ];
+            
+            requestsData.forEach(request => {
+                csvContent += `${request.id},${request.workerName},${request.workerId},${request.category},${request.description},${request.priority},${request.status},${request.date}\n`;
+            });
+            
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'admin_requests_data.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showDirectMessage('Admin request data exported successfully!', 'success');
         }
 
         function addRequest() {

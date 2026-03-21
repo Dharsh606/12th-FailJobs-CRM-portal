@@ -1461,40 +1461,477 @@
         }
 
         function viewJob(jobId) {
-            console.log('Viewing job:', jobId);
-            // Implementation for view job modal
+            // Find job data
+            const jobData = {
+                'JOB001': { title: 'Home Renovation Project', client: 'ABC Construction', location: 'Delhi NCR', budget: '₹25,000', status: 'Active', type: 'Renovation', duration: '2 weeks', workers: 3, posted: '2024-01-15' },
+                'JOB002': { title: 'Office Wiring', client: 'Tech Solutions', location: 'Mumbai', budget: '₹15,000', status: 'Completed', type: 'Electrical', duration: '1 week', workers: 2, posted: '2024-01-10' },
+                'JOB003': { title: 'Plumbing Installation', client: 'Residential Client', location: 'Bangalore', budget: '₹18,000', status: 'Pending', type: 'Plumbing', duration: '3 days', workers: 1, posted: '2024-01-20' }
+            };
+            
+            const job = jobData[jobId];
+            if (job) {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Job Details</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="job-detail-view">
+                                <div class="detail-item">
+                                    <strong>Job ID:</strong> ${jobId}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Title:</strong> ${job.title}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Client:</strong> ${job.client}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Location:</strong> ${job.location}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Budget:</strong> ${job.budget}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Status:</strong> ${job.status}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Type:</strong> ${job.type}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Duration:</strong> ${job.duration}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Workers Assigned:</strong> ${job.workers}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Posted Date:</strong> ${job.posted}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                            <button class="btn btn-warning" onclick="editJob('${jobId}')">Edit Job</button>
+                            <button class="btn btn-success" onclick="assignWorkers('${jobId}')">Assign Workers</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            }
         }
 
         function editJob(jobId) {
-            console.log('Editing job:', jobId);
-            // Implementation for edit job modal
+            const jobData = {
+                'JOB001': { title: 'Home Renovation Project', client: 'ABC Construction', location: 'Delhi NCR', budget: '25000', status: 'Active', type: 'Renovation', duration: '2 weeks' },
+                'JOB002': { title: 'Office Wiring', client: 'Tech Solutions', location: 'Mumbai', budget: '15000', status: 'Completed', type: 'Electrical', duration: '1 week' },
+                'JOB003': { title: 'Plumbing Installation', client: 'Residential Client', location: 'Bangalore', budget: '18000', status: 'Pending', type: 'Plumbing', duration: '3 days' }
+            };
+            
+            const job = jobData[jobId];
+            if (job) {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Job</h3>
+                            <button class="close-btn" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="editJobTitle">Job Title</label>
+                                <input type="text" id="editJobTitle" value="${job.title}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editJobClient">Client Name</label>
+                                <input type="text" id="editJobClient" value="${job.client}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editJobLocation">Location</label>
+                                <input type="text" id="editJobLocation" value="${job.location}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editJobBudget">Budget (₹)</label>
+                                <input type="number" id="editJobBudget" value="${job.budget}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editJobType">Job Type</label>
+                                <select id="editJobType" required>
+                                    <option value="Renovation" ${job.type === 'Renovation' ? 'selected' : ''}>Renovation</option>
+                                    <option value="Electrical" ${job.type === 'Electrical' ? 'selected' : ''}>Electrical</option>
+                                    <option value="Plumbing" ${job.type === 'Plumbing' ? 'selected' : ''}>Plumbing</option>
+                                    <option value="Painting" ${job.type === 'Painting' ? 'selected' : ''}>Painting</option>
+                                    <option value="Masonry" ${job.type === 'Masonry' ? 'selected' : ''}>Masonry</option>
+                                    <option value="Welding" ${job.type === 'Welding' ? 'selected' : ''}>Welding</option>
+                                    <option value="Cleaning" ${job.type === 'Cleaning' ? 'selected' : ''}>Cleaning</option>
+                                    <option value="Security" ${job.type === 'Security' ? 'selected' : ''}>Security</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editJobDuration">Duration</label>
+                                <select id="editJobDuration" required>
+                                    <option value="1 day" ${job.duration === '1 day' ? 'selected' : ''}>1 Day</option>
+                                    <option value="3 days" ${job.duration === '3 days' ? 'selected' : ''}>3 Days</option>
+                                    <option value="1 week" ${job.duration === '1 week' ? 'selected' : ''}>1 Week</option>
+                                    <option value="2 weeks" ${job.duration === '2 weeks' ? 'selected' : ''}>2 Weeks</option>
+                                    <option value="1 month" ${job.duration === '1 month' ? 'selected' : ''}>1 Month</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editJobStatus">Status</label>
+                                <select id="editJobStatus" required>
+                                    <option value="Active" ${job.status === 'Active' ? 'selected' : ''}>Active</option>
+                                    <option value="Pending" ${job.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Completed" ${job.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                    <option value="Cancelled" ${job.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="confirmEditJob('${jobId}')">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'block';
+            }
+        }
+
+        function confirmEditJob(jobId) {
+            const jobTitle = document.getElementById('editJobTitle').value;
+            const jobClient = document.getElementById('editJobClient').value;
+            const jobLocation = document.getElementById('editJobLocation').value;
+            const jobBudget = document.getElementById('editJobBudget').value;
+            const jobType = document.getElementById('editJobType').value;
+            const jobDuration = document.getElementById('editJobDuration').value;
+            const jobStatus = document.getElementById('editJobStatus').value;
+            
+            if (jobTitle && jobClient && jobLocation && jobBudget && jobType && jobDuration && jobStatus) {
+                closeModal();
+                showDirectMessage('Job updated successfully!', 'success');
+                console.log('Job updated:', { jobId, jobTitle, jobClient, jobLocation, jobBudget, jobType, jobDuration, jobStatus });
+            } else {
+                showDirectMessage('Please fill all required fields', 'error');
+            }
         }
 
         function assignWorkers(jobId) {
-            console.log('Assigning workers to job:', jobId);
-            // Implementation for assign workers modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Assign Workers to Job ${jobId}</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Select workers to assign to this job:</p>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="worker1"> Raj Kumar (Carpenter) - Available
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="worker2"> Amit Singh (Electrician) - Working
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="worker3"> Suresh Kumar (Plumber) - Available
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="worker4"> Mahesh Kumar (Painter) - Available
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignmentNotes">Assignment Notes</label>
+                            <textarea id="assignmentNotes" rows="3" placeholder="Add any assignment notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="confirmWorkerAssignment('${jobId}')">Assign Workers</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmWorkerAssignment(jobId) {
+            const worker1 = document.getElementById('worker1').checked;
+            const worker2 = document.getElementById('worker2').checked;
+            const worker3 = document.getElementById('worker3').checked;
+            const worker4 = document.getElementById('worker4').checked;
+            const assignmentNotes = document.getElementById('assignmentNotes').value;
+            const startDate = document.getElementById('startDate').value;
+            
+            if ((worker1 || worker2 || worker3 || worker4) && startDate) {
+                closeModal();
+                showDirectMessage('Workers assigned successfully!', 'success');
+                console.log('Workers assigned:', { jobId, workers: [worker1, worker2, worker3, worker4], assignmentNotes, startDate });
+            } else {
+                showDirectMessage('Please select at least one worker and start date', 'error');
+            }
         }
 
         function deleteJob(jobId) {
-            if (confirm(`Are you sure you want to delete job ${jobId}? This action cannot be undone.`)) {
-                console.log('Deleting job:', jobId);
-                // Implementation for delete job
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Delete Job</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete job ${jobId}? This action cannot be undone.</p>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="confirmDelete"> I understand this action is permanent
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="deleteReason">Reason for deletion</label>
+                            <textarea id="deleteReason" rows="3" placeholder="Enter reason..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-danger" onclick="confirmDelete('${jobId}')">Delete Job</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmDelete(jobId) {
+            const confirmDelete = document.getElementById('confirmDelete').checked;
+            const deleteReason = document.getElementById('deleteReason').value;
+            
+            if (confirmDelete) {
+                closeModal();
+                showDirectMessage('Job deleted successfully!', 'success');
+                console.log('Job deleted:', jobId, 'Reason:', deleteReason);
+            } else {
+                showDirectMessage('Please confirm the deletion', 'error');
+            }
+        }
+
+        function bulkDelete() {
+            const selectedCheckboxes = document.querySelectorAll('.job-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                showDirectMessage('Please select at least one job to delete', 'error');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Bulk Delete Jobs</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>⚠️ WARNING: This will permanently delete ${selectedCheckboxes.length} jobs. This action cannot be undone.</p>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="confirmBulkDelete"> I understand this action is permanent and irreversible
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="bulkDeleteReason">Reason for deletion</label>
+                            <textarea id="bulkDeleteReason" rows="3" placeholder="Enter reason for bulk deletion..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-danger" onclick="confirmBulkDelete()">Delete Jobs</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmBulkDelete() {
+            const selectedCheckboxes = document.querySelectorAll('.job-checkbox:checked');
+            const confirmBulkDelete = document.getElementById('confirmBulkDelete').checked;
+            const bulkDeleteReason = document.getElementById('bulkDeleteReason').value;
+            
+            if (confirmBulkDelete) {
+                closeModal();
+                showDirectMessage(`${selectedCheckboxes.length} jobs deleted permanently!`, 'success');
+                console.log('Bulk deleted jobs:', selectedCheckboxes.length, 'Reason:', bulkDeleteReason);
+            } else {
+                showDirectMessage('Please confirm the permanent deletion', 'error');
+            }
+        }
+
+        function searchJobs(searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            const jobRows = document.querySelectorAll('#jobsTableBody tr');
+            
+            jobRows.forEach(row => {
+                const jobTitle = row.querySelector('.job-title').textContent.toLowerCase();
+                const jobClient = row.querySelector('.job-client').textContent.toLowerCase();
+                const jobId = row.querySelector('td strong').textContent.toLowerCase();
+                
+                if (jobTitle.includes(searchLower) || jobClient.includes(searchLower) || jobId.includes(searchLower)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            const visibleRows = Array.from(jobRows).filter(row => row.style.display !== 'none');
+            showDirectMessage(`Found ${visibleRows.length} jobs matching "${searchTerm}"`, 'info');
+        }
+
+        function exportJobs() {
+            // Create CSV content with admin-level data
+            let csvContent = "Job ID,Title,Client,Location,Budget,Status,Type,Duration,Workers,Posted Date\n";
+            
+            // Sample data for export
+            const jobsData = [
+                { id: 'JOB001', title: 'Home Renovation Project', client: 'ABC Construction', location: 'Delhi NCR', budget: '₹25,000', status: 'Active', type: 'Renovation', duration: '2 weeks', workers: 3, posted: '2024-01-15' },
+                { id: 'JOB002', title: 'Office Wiring', client: 'Tech Solutions', location: 'Mumbai', budget: '₹15,000', status: 'Completed', type: 'Electrical', duration: '1 week', workers: 2, posted: '2024-01-10' },
+                { id: 'JOB003', title: 'Plumbing Installation', client: 'Residential Client', location: 'Bangalore', budget: '₹18,000', status: 'Pending', type: 'Plumbing', duration: '3 days', workers: 1, posted: '2024-01-20' }
+            ];
+            
+            jobsData.forEach(job => {
+                csvContent += `${job.id},${job.title},${job.client},${job.location},${job.budget},${job.status},${job.type},${job.duration},${job.workers},${job.posted}\n`;
+            });
+            
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'admin_jobs_data.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showDirectMessage('Admin job data exported successfully!', 'success');
+        }
+
+        function createJob() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Create New Job</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="jobTitle">Job Title</label>
+                            <input type="text" id="jobTitle" placeholder="Enter job title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobClient">Client Name</label>
+                            <input type="text" id="jobClient" placeholder="Enter client name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobLocation">Location</label>
+                            <input type="text" id="jobLocation" placeholder="Enter job location" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobBudget">Budget (₹)</label>
+                            <input type="number" id="jobBudget" placeholder="Enter budget" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobType">Job Type</label>
+                            <select id="jobType" required>
+                                <option value="">Select job type</option>
+                                <option value="Renovation">Renovation</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Plumbing">Plumbing</option>
+                                <option value="Painting">Painting</option>
+                                <option value="Masonry">Masonry</option>
+                                <option value="Welding">Welding</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Security">Security</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobDuration">Duration</label>
+                            <select id="jobDuration" required>
+                                <option value="">Select duration</option>
+                                <option value="1 day">1 Day</option>
+                                <option value="3 days">3 Days</option>
+                                <option value="1 week">1 Week</option>
+                                <option value="2 weeks">2 Weeks</option>
+                                <option value="1 month">1 Month</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobDescription">Description</label>
+                            <textarea id="jobDescription" rows="4" placeholder="Enter job description"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="confirmCreateJob()">Create Job</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function confirmCreateJob() {
+            const jobTitle = document.getElementById('jobTitle').value;
+            const jobClient = document.getElementById('jobClient').value;
+            const jobLocation = document.getElementById('jobLocation').value;
+            const jobBudget = document.getElementById('jobBudget').value;
+            const jobType = document.getElementById('jobType').value;
+            const jobDuration = document.getElementById('jobDuration').value;
+            const jobDescription = document.getElementById('jobDescription').value;
+            
+            if (jobTitle && jobClient && jobLocation && jobBudget && jobType && jobDuration) {
+                closeModal();
+                showDirectMessage('Job created successfully!', 'success');
+                console.log('Job created:', { jobTitle, jobClient, jobLocation, jobBudget, jobType, jobDuration, jobDescription });
+            } else {
+                showDirectMessage('Please fill all required fields', 'error');
+            }
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
             }
         }
 
         function previousPage() {
-            console.log('Going to previous page');
-            // Implementation for pagination
+            showDirectMessage('Previous page', 'info');
         }
 
         function nextPage() {
-            console.log('Going to next page');
-            // Implementation for pagination
+            showDirectMessage('Next page', 'info');
         }
 
         function goToPage(page) {
-            console.log('Going to page:', page);
-            // Implementation for pagination
+            showDirectMessage(`Page ${page}`, 'info');
         }
     </script>
     <script src="./direct-actions.js"></script>
